@@ -4,8 +4,17 @@ namespace App\Orchid\Screens\Ticket;
 
 use App\Models\Ticket;
 use Orchid\Screen\Screen;
+use Orchid\Support\Color;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Select;
 use Orchid\Support\Facades\Toast;
+use Orchid\Screen\Fields\TextArea;
+use Orchid\Support\Facades\Layout;
+use Illuminate\Support\Facades\Auth;
+use Orchid\Screen\Actions\ModalToggle;
+use Illuminate\Support\Facades\Storage;
 use App\Orchid\Layouts\Ticket\TicketListLayout;
 
 class TicketListScreen extends Screen
@@ -39,7 +48,14 @@ class TicketListScreen extends Screen
      */
     public function commandBar(): iterable
     {
-        return [];
+        return [
+            ModalToggle::make('Создать тикет')
+                ->icon('plus')
+                ->type(Color::PRIMARY())
+                ->modal('modalCreateTicket')
+                ->modalTitle('Создание тикета')
+                ->method('createTicket'),
+        ];
     }
 
     /**
@@ -50,8 +66,57 @@ class TicketListScreen extends Screen
     public function layout(): iterable
     {
         return [
-            TicketListLayout::class
+            TicketListLayout::class,
+
+            Layout::modal('modalCreateTicket', [
+                Layout::rows([
+                    Select::make('department')
+                        ->options(Ticket::DEPARTMENT)
+                        ->title('Отдел')
+                        ->required(),
+
+                    Input::make('title')
+                        ->title('Заголовок')
+                        ->type('text')
+                        ->required(),
+
+                    TextArea::make('message')
+                        ->title('Сообщение')
+                        ->rows(5)
+                        ->required(),
+                ]),
+            ])->applyButton('Создать'),
         ];
+    }
+
+    public function createTicket(Request $request): void
+    {
+        try {
+            $validated = $request->validate([
+                'title' => ['required', 'string', 'max:255'],
+                'department' => ['required', Rule::in(array_keys(Ticket::DEPARTMENT))],
+                'message' => ['required', 'string', 'max:1024'],
+                'file' => ['nullable', 'mimes:pdf,png,jpg,gif', 'max:5120']    
+            ]);
+
+            $validated['user_id'] = Auth::id();
+            $validated['status'] = 'New';
+
+            $message = $validated['message'];
+            $path = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
+            
+            $ticket = Ticket::create($validated);
+            $ticket->messages()->create([
+                'user_id' => Auth::id(),
+                'message' => $message,
+                'file' => $path,
+            ]);
+
+            Toast::success('Тикет успешно создан.');
+        } catch (\Throwable $e) {
+            info($e);
+            Toast::error($e->getMessage());
+        }
     }
 
     public function removeTicket(Request $request, $id)

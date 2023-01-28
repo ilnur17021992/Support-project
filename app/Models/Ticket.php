@@ -30,8 +30,8 @@ class Ticket extends Model
     ];
 
     public const DEPARTMENT = [
-        'Moderation' => 'Модерация',
         'Other' => 'Общие вопросы',
+        'Moderation' => 'Модерация',
     ];
 
     public function user()
