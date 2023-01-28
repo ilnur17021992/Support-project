@@ -47,7 +47,7 @@ class TicketListLayout extends Table
                 ->render(fn (Ticket $ticket) => Link::make(Str::limit($ticket->messages()->latest()->first()?->message, 20))
                     ->route('platform.ticket.messages', $ticket)),
 
-            TD::make('user_id', 'Клиент') //->searchColumns('name', 'email')
+            TD::make('user_id', 'Клиент')
                 ->sort()
                 ->filter(Relation::make()->fromModel(User::class, 'id')->searchColumns('name', 'email')->chunk(10)->displayAppend('full'))
                 ->render(fn (Ticket $ticket) => Link::make(Str::limit($ticket->user->name, 25))
@@ -79,9 +79,8 @@ class TicketListLayout extends Table
             TD::make('messagesCount', 'Кол-во сообщений')
                 ->sort()
                 ->align(TD::ALIGN_CENTER)
-                ->render(fn (Ticket $ticket) => $ticket->messages()->count())
-                ->defaultHidden(),
-
+                ->render(fn (Ticket $ticket) => Link::make($ticket->messages()->count())
+                    ->route('platform.ticket.messages', $ticket)),
 
             TD::make('updated_at', 'Дата обновления')
                 ->sort()

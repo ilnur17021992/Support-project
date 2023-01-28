@@ -63,4 +63,9 @@ class User extends Authenticatable
         'updated_at',
         'created_at',
     ];
+
+    public function getFullAttribute(): string
+    {
+        return $this->attributes['name'] . ' (' . $this->attributes['email'] . ')';
+    }
 }

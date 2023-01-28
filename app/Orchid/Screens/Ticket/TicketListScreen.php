@@ -119,7 +119,7 @@ class TicketListScreen extends Screen
         }
     }
 
-    public function removeTicket(Request $request, $id)
+    public function removeTicket($id)
     {
         try {
             Ticket::find($id)->delete();
