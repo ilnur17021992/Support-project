@@ -21,17 +21,18 @@ class TestController extends Controller
         // $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), 'hello!', null, false, null, $keyboard);
 
         // Кнопки прикрепленные к сообщению
-        $keyboard = new InlineKeyboardMarkup(
-            [
-                [
-                    ['text' => 'button1', 'url' => 'https://core.telegram.org'],['text' => 'button2', 'url' => 'https://core.telegram.org']
-                ],
-                [
-                    ['text' => 'button3', 'url' => 'https://core.telegram.org']
-                ]
-            ]
-        );
+        // $keyboard = new InlineKeyboardMarkup(
+        //     [
+        //         [
+        //             ['text' => 'button1', 'url' => 'https://core.telegram.org'],['text' => 'button2', 'url' => 'https://core.telegram.org']
+        //         ],
+        //         [
+        //             ['text' => 'button3', 'url' => 'https://core.telegram.org']
+        //         ]
+        //     ]
+        // );
 
-        $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), 'Hello!', null, false, null, $keyboard);
+        // $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), 'Hello!', null, false, null, $keyboard);
+
     }
 }
