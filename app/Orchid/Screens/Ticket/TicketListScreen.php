@@ -84,19 +84,22 @@ class TicketListScreen extends Screen
                         ->title('Сообщение')
                         ->rows(5)
                         ->required(),
+
+                    // Input::make('file')
+                    //     ->type('file'),
                 ]),
             ])->applyButton('Создать'),
         ];
     }
 
     public function createTicket(Request $request): void
-    {
+    {       
         try {
             $validated = $request->validate([
                 'title' => ['required', 'string', 'max:255'],
                 'department' => ['required', Rule::in(array_keys(Ticket::DEPARTMENT))],
                 'message' => ['required', 'string', 'max:1024'],
-                'file' => ['nullable', 'mimes:pdf,png,jpg,gif', 'max:5120']    
+                'file' => ['nullable', 'mimes:pdf,png,jpg,gif', 'max:5120']
             ]);
 
             $validated['user_id'] = Auth::id();
@@ -104,7 +107,7 @@ class TicketListScreen extends Screen
 
             $message = $validated['message'];
             $path = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
-            
+
             $ticket = Ticket::create($validated);
             $ticket->messages()->create([
                 'user_id' => Auth::id(),

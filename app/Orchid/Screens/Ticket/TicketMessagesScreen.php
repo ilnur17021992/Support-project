@@ -99,7 +99,6 @@ class TicketMessagesScreen extends Screen
                     Button::make('Обновить')
                         ->method('updateTicket')
                         ->type(Color::PRIMARY()),
-
                 ]),
             ]),
 
@@ -118,18 +117,18 @@ class TicketMessagesScreen extends Screen
         $ticket->messages()->create($validated);
         $ticket->update(['status' => 'Processing']);
 
-        $telegramMessage =
-            '<b>Time: </b>' . '<code>' . date('d.m.Y H:i:s') . '</code>' . "\n" .
-            '<b>Type: </b>' . '<code>' . 'Ответ тех. поддержки 👔' . '</code>' . "\n" .
-            '<b>ID: </b>' . '<code>' . $ticket->id . '</code>' . "\n" .
-            '<b>Department: </b>' . '<code>' . Ticket::DEPARTMENT[$ticket->department] . '</code>' . "\n" .
-            '<b>Admin: </b>' . '<code>' . auth('sanctum')->user()->name . '</code>' . "\n" .
-            '<b>Title: </b>' . '<code>' . $ticket->title . '</code>' . "\n" .
-            '<b>Message: </b>' . '<code>' . $validated['message'] . '</code>' . "\n";
+        // $telegramMessage =
+        //     '<b>Time: </b>' . '<code>' . date('d.m.Y H:i:s') . '</code>' . "\n" .
+        //     '<b>Type: </b>' . '<code>' . 'Ответ тех. поддержки 👔' . '</code>' . "\n" .
+        //     '<b>ID: </b>' . '<code>' . $ticket->id . '</code>' . "\n" .
+        //     '<b>Department: </b>' . '<code>' . Ticket::DEPARTMENT[$ticket->department] . '</code>' . "\n" .
+        //     '<b>Admin: </b>' . '<code>' . auth('sanctum')->user()->name . '</code>' . "\n" .
+        //     '<b>Title: </b>' . '<code>' . $ticket->title . '</code>' . "\n" .
+        //     '<b>Message: </b>' . '<code>' . $validated['message'] . '</code>' . "\n";
 
         try {
-            $notification = new TelegramNotification($telegramMessage, $ticket->id);
-            Notification::send('telegram', $notification);
+            // $notification = new TelegramNotification($telegramMessage, $ticket->id);
+            // Notification::send('telegram', $notification);
 
             Toast::success('Сообщение успешно отправлено.');
         } catch (\Throwable $e) {
