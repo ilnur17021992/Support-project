@@ -10,7 +10,8 @@
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
-        "orchid/platform": "^13.9"
+        "orchid/platform": "^13.9",
+        "telegram-bot/api": "^2.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
