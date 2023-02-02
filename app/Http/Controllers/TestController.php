@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use TelegramBot\Api\BotApi;
 use Illuminate\Http\Request;
+use Orchid\Platform\Models\Role;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
@@ -41,9 +43,10 @@ class TestController extends Controller
         // echo file_get_contents("https://api.telegram.org/bot$token/getWebhookInfo"); // Проверить Webhook
         // echo file_get_contents("https://api.telegram.org/bot$token/deleteWebhook"); // Удалить Webhook
 
+        $role = Role::find(1);
+
+        User::find(779740786)->addRole($role);
 
         echo test();
-
-
     }
 }

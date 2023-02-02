@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Orchid\Platform\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
@@ -16,11 +17,12 @@ function createUser($bot, $message)
 
     if (!$user) {
         $fromUser = $message->getFrom();
-        $userName = $fromUser->getUsername();
+        $userName = 'User' . $id;
         $firstName = $fromUser->getFirstName();
-        $email = $id . '@project.com';
+        $email = 'user' . $id . '@project.com';
         $password =  getPassword(10);
         $keyboard = new InlineKeyboardMarkup([[['text' => 'Войти в личный кабинет', 'url' => url('/')]]]);
+        $role = Role::firstWhere('slug', 'user');
 
         User::create([
             'id' => $id,
@@ -30,7 +32,7 @@ function createUser($bot, $message)
             // 'first_name' => $fromUser->getFirstName(),
             // 'last_name' => $fromUser->getLastName(),
             // 'language' => $fromUser->getLanguageCode(),
-        ]);
+        ])->addRole($role);
 
         $bot->sendMessage($id, getWelcomeMessage($firstName, $email, $password), 'HTML', replyMarkup: $keyboard);
     }
