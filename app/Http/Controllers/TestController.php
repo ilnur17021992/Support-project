@@ -34,5 +34,16 @@ class TestController extends Controller
 
         // $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), 'Hello!', null, false, null, $keyboard);
 
+
+        // $token = config('services.telegram_bot_api.token');
+        // $url = 'https://opengpt.online/api/bot';
+        // echo file_get_contents("https://api.telegram.org/bot$token/setWebhook?url=$url"); // Установить Webhook
+        // echo file_get_contents("https://api.telegram.org/bot$token/getWebhookInfo"); // Проверить Webhook
+        // echo file_get_contents("https://api.telegram.org/bot$token/deleteWebhook"); // Удалить Webhook
+
+
+        echo test();
+
+
     }
 }

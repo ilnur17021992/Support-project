@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use TelegramBot\Api\BotApi;
+use TelegramBot\Api\Client;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Services\TelegramBotService;
 
 class TelegramController extends Controller
 {
-    public function __invoke()
+    public function __invoke(Request $request, TelegramBotService $telegramBot)
     {
-        $token = config('services.telegram_bot_api.token');
-        $url = 'https://opengpt.online/api/bot';
-        echo file_get_contents("https://api.telegram.org/bot$token/setWebhook?url=$url"); // Установить Webhook
-        echo file_get_contents("https://api.telegram.org/bot$token/getWebhookInfo"); // Проверить Webhook
-        // echo file_get_contents("https://api.telegram.org/bot$token/deleteWebhook"); // Удалить Webhook
+        try {
+            $telegramBot($request);
+        } catch (\TelegramBot\Api\Exception $e) {
+            $e->getMessage();
+        }
     }
 }
