@@ -3,12 +3,17 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Ticket;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Types\Update;
 
 class TelegramBotService
 {
+    public function __construct(public TicketService $ticket)
+    {
+    }
+
     public function __invoke()
     {
         $bot = new Client(config('services.telegram_bot_api.token'));
@@ -27,7 +32,24 @@ class TelegramBotService
 
             if (empty($user)) return $this->sendMessage($id, 'Для начала воспользуйтесь командой: /start');
 
-            $this->sendMessage($id, 'Your message: ' . $text);
+
+            $ticket = $user->tickets()->where('status', '!=', 'Closed')->latest()->first();
+
+            if (empty($ticket)) {
+                $ticket = Ticket::create([
+                    'title' => 'Telegram',
+                    'department' => 'Other',
+                    'user_id' => $id,
+                    'status' => 'New',
+                ]);
+
+                $this->sendMessage($id, 'Благодарим Вас за обращение! Наши специалисты уже приступают к рассмотрению Вашего вопроса. Ожидайте ответа!');
+            }
+
+            $ticket->messages()->create([
+                'user_id' => $id,
+                'message' => $text,
+            ]);
         }, function () {
             return true;
         });
