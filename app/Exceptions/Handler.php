@@ -59,7 +59,7 @@ class Handler extends ExceptionHandler
                 '<b>File: </b>' . '<code>' . $e->getFile() . '</code>' . "\n" .
                 '<b>Line: </b>' . '<code>' . $e->getLine() . '</code>';
 
-            $bot->sendMessage('-873224197', $error, 'HTML');
+            $bot->sendMessage(config('services.telegram_bot_api.error_chat_id'), $error, 'HTML');
         });
     }
 }

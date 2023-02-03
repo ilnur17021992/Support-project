@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\User;
+use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Types\Update;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class TelegramBotService
 {
@@ -12,11 +14,11 @@ class TelegramBotService
     {
         $bot = new Client(config('services.telegram_bot_api.token'));
 
-        $bot->command('start', function ($message) use ($bot) {
-            createUser($bot, $message);
+        $bot->command('start', function ($message) {
+            createUser($message);
         });
 
-        $bot->on(function (Update $update) use ($bot) {
+        $bot->on(function (Update $update) {
             $message = $update->getMessage();
             if (empty($message)) exit;
 
@@ -24,13 +26,19 @@ class TelegramBotService
             $text = $message->getText();
             $user = User::find($id);
 
-            if (empty($user)) return $bot->sendMessage($id, 'Для начала воспользуйтесь командой: /start');
+            if (empty($user)) return $this->sendMessage($id, 'Для начала воспользуйтесь командой: /start');
 
-            $bot->sendMessage($id, 'Your message: ' . $text);
+            $this->sendMessage($id, 'Your message: ' . $text);
         }, function () {
             return true;
         });
 
         $bot->run();
+    }
+
+    public function sendMessage($id, $message, $parseMode = 'HTML')
+    {
+        $bot = new BotApi(config('services.telegram_bot_api.token'));
+        $bot->sendMessage($id, $message, $parseMode);
     }
 }

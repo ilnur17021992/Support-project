@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\User;
+use App\Services\TelegramBotService;
+use Illuminate\Http\Request;
+use TelegramBot\Api\BotApi;
 use Orchid\Platform\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,12 +19,13 @@ function checkRole($role)
     return Auth::user()->inRole(Role::firstWhere('slug', $role));
 }
 
-function createUser($bot, $message)
+function createUser($message)
 {
+    $bot = new BotApi(config('services.telegram_bot_api.token'));
     $id = $message->getChat()->getId();
     $user = User::find($id);
 
-    if (!$user) {
+    if (!$user && $id > 0) {
         $fromUser = $message->getFrom();
         $userName = 'User' . $id;
         $firstName = $fromUser->getFirstName();
@@ -35,9 +39,6 @@ function createUser($bot, $message)
             'name' => $userName,
             'email' => $email,
             'password' => Hash::make($password),
-            // 'first_name' => $fromUser->getFirstName(),
-            // 'last_name' => $fromUser->getLastName(),
-            // 'language' => $fromUser->getLanguageCode(),
         ])->addRole($role);
 
         $bot->sendMessage($id, getWelcomeMessage($firstName, $email, $password), 'HTML', replyMarkup: $keyboard);
