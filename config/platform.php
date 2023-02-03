@@ -95,7 +95,7 @@ return [
     |
     */
 
-    'index'         => 'platform.main',
+    'index'         => 'platform.ticket.list',
 
     /*
     |--------------------------------------------------------------------------
@@ -127,9 +127,9 @@ return [
     |
     */
 
-    'template'      => [
-        'header' => '',
-        'footer' => '',
+    'template' => [
+        'header' => 'brand.header',
+        'footer' => 'brand.footer',
     ],
 
     /*
