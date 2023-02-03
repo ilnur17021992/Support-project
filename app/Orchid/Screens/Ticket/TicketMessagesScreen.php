@@ -52,23 +52,14 @@ class TicketMessagesScreen extends Screen
      */
     public function commandBar(): iterable
     {
-        return checkRole('user')
-            ? [
-                Button::make('Проблема решена')
-                    ->icon('check')
-                    ->method('closeTicket')
-                    ->confirm('Моя проблема решена')
-                    ->type(Color::SUCCESS())
-                    ->canSee($this->ticket->status != 'Closed'),
-            ]
-            : [
-                Button::make('Закрыть тикет')
-                    ->icon('close')
-                    ->method('closeTicket')
-                    ->confirm('Проблема пользователя решена')
-                    ->type(Color::DANGER())
-                    ->canSee($this->ticket->status != 'Closed'),
-            ];
+        return [
+            Button::make(checkRole('user') ? 'Проблема решена' : 'Закрыть тикет')
+                ->icon(checkRole('user') ? 'check' : 'close')
+                ->method('closeTicket')
+                ->confirm(checkRole('user') ? 'Моя проблема решена' : 'Проблема пользователя решена')
+                ->type(checkRole('user') ? Color::SUCCESS() : Color::DANGER())
+                ->canSee($this->ticket->status != 'Closed')
+        ];
     }
 
     /**
