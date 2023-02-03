@@ -6,7 +6,6 @@ use App\Models\User;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Types\Update;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class TelegramBotService
 {
@@ -36,9 +35,9 @@ class TelegramBotService
         $bot->run();
     }
 
-    public function sendMessage($id, $message, $parseMode = 'HTML')
+    public function sendMessage($id, $message, $keyboard = null)
     {
         $bot = new BotApi(config('services.telegram_bot_api.token'));
-        $bot->sendMessage($id, $message, $parseMode);
+        $bot->sendMessage($id, $message, 'HTML', false, null, $keyboard);
     }
 }

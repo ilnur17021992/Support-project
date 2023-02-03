@@ -2,21 +2,21 @@
 
 namespace App\Orchid\Screens\Ticket;
 
-use Orchid\Screen\TD;
 use App\Models\Ticket;
-use Orchid\Screen\Screen;
-use Orchid\Support\Color;
+use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
+use App\Services\TelegramBotService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Input;
-use Orchid\Platform\Models\Role;
 use Orchid\Screen\Fields\Select;
-use Orchid\Screen\Actions\Button;
-use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\TextArea;
+use Orchid\Screen\Screen;
+use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
-use Illuminate\Support\Facades\Auth;
-use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
+use Orchid\Support\Facades\Toast;
+use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class TicketMessagesScreen extends Screen
 {
@@ -131,7 +131,7 @@ class TicketMessagesScreen extends Screen
         ];
     }
 
-    public function sendMessage(Request $request, Ticket $ticket)
+    public function sendMessage(Request $request, Ticket $ticket, TelegramBotService $bot)
     {
         $validated = $request->validate([
             'message' => ['required', 'string', 'max:1024'],
@@ -141,21 +141,24 @@ class TicketMessagesScreen extends Screen
             $validated['user_id'] = Auth::id();
             $ticket->messages()->create($validated);
 
-            checkRole('user')
-                ? $ticket->update(['status' => 'New'])
-                : $ticket->update(['status' => 'Processing']);
+            $from = checkRole('user') ? 'Ответ пользователя ✉️' : 'Ответ тех. поддержки 👔';
+            $group = checkRole('user') ? 'User:' : 'Support:';
+            $status = checkRole('user') ? 'New' : 'Processing';
 
-            // $telegramMessage =
-            //     '<b>Time: </b>' . '<code>' . date('d.m.Y H:i:s') . '</code>' . "\n" .
-            //     '<b>Type: </b>' . '<code>' . 'Ответ тех. поддержки 👔' . '</code>' . "\n" .
-            //     '<b>ID: </b>' . '<code>' . $ticket->id . '</code>' . "\n" .
-            //     '<b>Department: </b>' . '<code>' . Ticket::DEPARTMENT[$ticket->department] . '</code>' . "\n" .
-            //     '<b>Admin: </b>' . '<code>' . auth('sanctum')->user()->name . '</code>' . "\n" .
-            //     '<b>Title: </b>' . '<code>' . $ticket->title . '</code>' . "\n" .
-            //     '<b>Message: </b>' . '<code>' . $validated['message'] . '</code>' . "\n";
+            $ticket->update(['status' => $status]);
 
-            // $notification = new TelegramNotification($telegramMessage, $ticket->id);
-            // Notification::send('telegram', $notification);
+            $message =
+                '<b>Time: </b><code>' . date('d.m.Y H:i:s') . '</code>' . "\n" .
+                '<b>Type: </b><code>' . $from . '</code>' . "\n" .
+                '<b>ID: </b><code>' . $ticket->id . '</code>' . "\n" .
+                '<b>Department: </b><code>' . Ticket::DEPARTMENT[$ticket->department] . '</code>' . "\n" .
+                '<b>' . $group . '</b><code> ' . auth('sanctum')->user()->name . '</code>' . "\n" .
+                '<b>Title: </b><code>' . $ticket->title . '</code>' . "\n" .
+                '<b>Message: </b><code>' . $validated['message'] . '</code>' . "\n";
+
+            $keyboard = new InlineKeyboardMarkup([[['text' => 'View ticket', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])]]]);
+
+            $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $message, $keyboard);
 
             Toast::success('Сообщение успешно отправлено.');
         } catch (\Throwable $e) {

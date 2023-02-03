@@ -1,12 +1,10 @@
 <?php
 
 use App\Models\User;
-use App\Services\TelegramBotService;
-use Illuminate\Http\Request;
-use TelegramBot\Api\BotApi;
-use Orchid\Platform\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Orchid\Platform\Models\Role;
+use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 function test()
