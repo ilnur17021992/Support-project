@@ -65,6 +65,11 @@ class User extends Authenticatable
         'created_at',
     ];
 
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
     public function getFullAttribute(): string
     {
         return $this->attributes['name'] . ' (' . $this->attributes['email'] . ')';

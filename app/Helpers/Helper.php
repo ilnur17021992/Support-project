@@ -2,12 +2,18 @@
 
 use App\Models\User;
 use Orchid\Platform\Models\Role;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 function test()
 {
     return 'best';
+}
+
+function checkRole($role)
+{
+    return Auth::user()->inRole(Role::firstWhere('slug', $role));
 }
 
 function createUser($bot, $message)

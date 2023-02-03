@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Types\Update;
 
@@ -20,7 +21,12 @@ class TelegramBotService
             if (empty($message)) exit;
 
             $id = $message->getChat()->getId();
-            $bot->sendMessage($id, 'Your message: ' . $message->getText());
+            $text = $message->getText();
+            $user = User::find($id);
+
+            if (empty($user)) return $bot->sendMessage($id, 'Для начала воспользуйтесь командой: /start');
+
+            $bot->sendMessage($id, 'Your message: ' . $text);
         }, function () {
             return true;
         });

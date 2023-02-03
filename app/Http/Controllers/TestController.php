@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use TelegramBot\Api\BotApi;
 use Illuminate\Http\Request;
+use App\Services\TicketService;
 use Orchid\Platform\Models\Role;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use TelegramBot\Api\Types\ReplyKeyboardRemove;
@@ -12,7 +13,7 @@ use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class TestController extends Controller
 {
-    public function __invoke()
+    public function __invoke(TicketService $test)
     {
         $bot = new BotApi(config('services.telegram_bot_api.token'));
 
@@ -48,6 +49,25 @@ class TestController extends Controller
         // echo file_get_contents("https://api.telegram.org/bot$token/getWebhookInfo"); // Проверить Webhook
         // echo file_get_contents("https://api.telegram.org/bot$token/deleteWebhook"); // Удалить Webhook
 
+
+
+        return $test('rjnrj3');
+
+
+        // $user = User::find(779740786);
+
+
+        // $ticket = $user->tickets()->where('status', '!=', 'Closed')->latest()->first();
+
+        // $ticket->messages()->create([
+        //     'user_id' => 779740786,
+        //     'message' => 'ruwieryuiewyriewy'
+        // ]);
+
+
+        // return $ticket;
+
+        // $ticket->messages()->create($validated);
 
 
         echo test();
