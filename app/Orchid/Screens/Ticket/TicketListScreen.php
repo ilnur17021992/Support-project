@@ -122,6 +122,17 @@ class TicketListScreen extends Screen
         }
     }
 
+    public function closeTicket(Ticket $ticket)
+    {
+        try {
+            $ticket->update(['status' => 'Closed']);
+            Toast::success('Тикет успешно закрыт.');
+        } catch (\Throwable $e) {
+            info($e);
+            Toast::error($e->getMessage());
+        }
+    }
+
     public function removeTicket($id)
     {
         try {

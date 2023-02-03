@@ -2,9 +2,9 @@
 
 namespace App\Orchid\Layouts\Ticket;
 
+use App\Models\User;
 use Orchid\Screen\TD;
 use App\Models\Ticket;
-use App\Models\User;
 use Illuminate\Support\Str;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Select;
@@ -12,6 +12,7 @@ use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Actions\DropDown;
+use Illuminate\Support\Facades\Auth;
 
 class TicketListLayout extends Table
 {
@@ -47,7 +48,8 @@ class TicketListLayout extends Table
                 ->render(fn (Ticket $ticket) => Link::make(Str::limit($ticket->messages()->latest()->first()?->message, 20))
                     ->route('platform.ticket.messages', $ticket)),
 
-            TD::make('user_id', 'Клиент')
+            TD::make('user_id', 'Пользователь')
+                ->canSee(checkPermission('platform.systems.users'))
                 ->sort()
                 ->filter(Relation::make()->fromModel(User::class, 'id')->searchColumns('name', 'email')->chunk(10)->displayAppend('full'))
                 ->render(fn (Ticket $ticket) => Link::make(Str::limit($ticket->user->name, 25))
@@ -102,16 +104,22 @@ class TicketListLayout extends Table
                                 ->icon('eye')
                                 ->route('platform.ticket.messages', $ticket),
 
+                            Button::make('Закрыть')
+                                ->icon('close')
+                                ->confirm('Закрытие тикета ID: ' . $ticket->id)
+                                ->method('closeTicket', [
+                                    'id' => $ticket->id,
+                                ]),
+
                             Button::make('Удалить')
                                 ->icon('trash')
                                 ->confirm('Удаление тикета ID: ' . $ticket->id)
+                                ->canSee(checkPermission('platform.systems.support'))
                                 ->method('removeTicket', [
                                     'id' => $ticket->id,
                                 ]),
                         ]);
                 }),
-
-
         ];
     }
 }

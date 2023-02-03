@@ -98,7 +98,6 @@ Route::screen('example-editors', ExampleTextEditorsScreen::class)->name('platfor
 Route::screen('example-cards', ExampleCardsScreen::class)->name('platform.example.cards');
 Route::screen('example-advanced', ExampleFieldsAdvancedScreen::class)->name('platform.example.advanced');
 
-//Route::screen('idea', Idea::class, 'platform.screens.idea');
 
 
 Route::screen('tickets', TicketListScreen::class)
@@ -112,5 +111,3 @@ Route::screen('tickets/{ticket}/messages', TicketMessagesScreen::class)
     ->breadcrumbs(fn (Trail $trail, $ticket) => $trail
         ->parent('platform.ticket.list')
         ->push('Тикет', route('platform.ticket.messages', $ticket)));
-
-

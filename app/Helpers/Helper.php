@@ -12,6 +12,11 @@ function test()
     return 'best';
 }
 
+function checkPermission($permission)
+{
+    return Auth::user()->hasAccess($permission);
+}
+
 function checkRole($role)
 {
     return Auth::user()->inRole(Role::firstWhere('slug', $role));

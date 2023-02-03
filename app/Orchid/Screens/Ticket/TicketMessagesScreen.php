@@ -5,6 +5,7 @@ namespace App\Orchid\Screens\Ticket;
 use App\Models\Ticket;
 use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
 use App\Services\TelegramBotService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Orchid\Screen\Actions\Button;
@@ -53,12 +54,12 @@ class TicketMessagesScreen extends Screen
     public function commandBar(): iterable
     {
         return [
-            Button::make(checkRole('user') ? 'Проблема решена' : 'Закрыть тикет')
-                ->icon(checkRole('user') ? 'check' : 'close')
-                ->method('closeTicket')
-                ->confirm(checkRole('user') ? 'Моя проблема решена' : 'Проблема пользователя решена')
-                ->type(checkRole('user') ? Color::SUCCESS() : Color::DANGER())
+            Button::make(checkPermission('platform.systems.support') ? 'Закрыть тикет' : 'Проблема решена')
+                ->icon(checkPermission('platform.systems.support') ? 'close' : 'check')
+                ->confirm(checkPermission('platform.systems.support') ? 'Проблема пользователя решена' : 'Моя проблема решена')
+                ->type(checkPermission('platform.systems.support') ? Color::DANGER() : Color::SUCCESS())
                 ->canSee($this->ticket->status != 'Closed')
+                ->method('closeTicket')
         ];
     }
 
@@ -77,7 +78,7 @@ class TicketMessagesScreen extends Screen
                     ->placeholder('Введите текст ответа')
                     ->rows(9),
                 Button::make('Отправить')
-                    ->icon('cursor')
+                    ->icon('paper-plane')
                     ->method('sendMessage')
                     ->type(Color::PRIMARY()),
             ]),
@@ -111,7 +112,7 @@ class TicketMessagesScreen extends Screen
                     ->icon('refresh')
                     ->method('updateTicket')
                     ->type(Color::INFO())
-                    ->canSee(checkRole('support')),
+                    ->canSee(checkPermission('platform.systems.support')),
             ]),
         ];
 
@@ -130,11 +131,14 @@ class TicketMessagesScreen extends Screen
 
         try {
             $validated['user_id'] = Auth::id();
+
+            if ($ticket->status == 'Closed') throw new Exception('Ошибка: тикет уже закрыт');
+
             $ticket->messages()->create($validated);
 
-            $from = checkRole('user') ? 'Ответ пользователя ✉️' : 'Ответ тех. поддержки 👔';
-            $group = checkRole('user') ? 'User:' : 'Support:';
-            $status = checkRole('user') ? 'New' : 'Processing';
+            $from = checkPermission('platform.systems.support') ? 'Ответ тех. поддержки 👔' : 'Ответ пользователя ✉️';
+            $group = checkPermission('platform.systems.support') ? 'Support:' : 'User:';
+            $status = checkPermission('platform.systems.support') ? 'Processing' : 'New';
 
             $ticket->update(['status' => $status]);
 
