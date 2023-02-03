@@ -7,6 +7,7 @@ use TelegramBot\Api\BotApi;
 use Illuminate\Http\Request;
 use Orchid\Platform\Models\Role;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
+use TelegramBot\Api\Types\ReplyKeyboardRemove;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class TestController extends Controller
@@ -19,7 +20,11 @@ class TestController extends Controller
         // $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), 'hello!');
 
         // Меню из кнопок
-        // $keyboard = new ReplyKeyboardMarkup(array(array("one", "two", "three")), true, true); // true for one-time keyboard
+        // $keyboard = new ReplyKeyboardMarkup(array(array("one", "two", "three")), true); // true for one-time keyboard
+        // $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), 'hello!', null, false, null, $keyboard);
+
+        // Удалить меню из кнопок
+        // $keyboard = new ReplyKeyboardRemove();
         // $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), 'hello!', null, false, null, $keyboard);
 
         // Кнопки прикрепленные к сообщению
@@ -43,9 +48,7 @@ class TestController extends Controller
         // echo file_get_contents("https://api.telegram.org/bot$token/getWebhookInfo"); // Проверить Webhook
         // echo file_get_contents("https://api.telegram.org/bot$token/deleteWebhook"); // Удалить Webhook
 
-        $role = Role::find(1);
 
-        User::find(779740786)->addRole($role);
 
         echo test();
     }
