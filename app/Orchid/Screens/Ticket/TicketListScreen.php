@@ -53,7 +53,7 @@ class TicketListScreen extends Screen
      */
     public function commandBar(): iterable
     {
-        if (!checkPermission('platform.systems.support') && auth()->user()->tickets()->whereIn('status', ['Processing', 'New'])->count() == 0)
+        if (!checkPermission('platform.systems.support') && !checkExistsTicket(auth()->user()))
             return [
                 ModalToggle::make('Создать тикет')
                     ->icon('plus')
@@ -112,13 +112,9 @@ class TicketListScreen extends Screen
 
             $validated['status'] = 'New';
             $validated['user_id'] = auth()->id();
-            $user = auth()->user();
 
-            if ($user->tickets()->whereIn('status', ['Processing', 'New'])->count() > 0) throw new Exception('У вас уже есть активный тикет');
-
-            $ticket = Ticket::create($validated);
-
-            $ticketService->createOrUpdate($user, $validated['message'], $ticket);
+            if (checkExistsTicket(auth()->user())) throw new Exception('У вас уже есть активный тикет');
+            $ticketService->create($validated);
 
             Toast::success('Тикет успешно создан.');
         } catch (\Throwable $e) {

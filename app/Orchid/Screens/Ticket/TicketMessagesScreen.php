@@ -130,11 +130,8 @@ class TicketMessagesScreen extends Screen
 
         try {
             if ($ticket->status == 'Closed') throw new Exception('Ошибка: тикет уже закрыт');
-
-            $user = auth()->user();
-            $message = $validated['message'];
-
-            $ticketService->createOrUpdate($user, $message, $ticket);
+            $validated['user_id'] = auth()->id();
+            $ticketService->send($ticket, $validated);
 
             Toast::success('Сообщение успешно отправлено.');
         } catch (\Throwable $e) {

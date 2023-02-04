@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use TelegramBot\Api\BotApi;
 use Illuminate\Http\Request;
 use App\Services\TicketService;
@@ -49,25 +50,12 @@ class TestController extends Controller
         // echo file_get_contents("https://api.telegram.org/bot$token/getWebhookInfo"); // Проверить Webhook
         // echo file_get_contents("https://api.telegram.org/bot$token/deleteWebhook"); // Удалить Webhook
 
+        // $res->getMessageId()
+        // $bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), 4, true); // 4 6 7
+        // $bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), 6, true); // 4 6 7
+        // $bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), 7, true); // 4 6 7
+        // $bot->unpinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), ['message_id' => 4]);
 
-
-        return $test('rjnrj3');
-
-
-        // $user = User::find(779740786);
-
-
-        // $ticket = $user->tickets()->where('status', '!=', 'Closed')->latest()->first();
-
-        // $ticket->messages()->create([
-        //     'user_id' => 779740786,
-        //     'message' => 'ruwieryuiewyriewy'
-        // ]);
-
-
-        // return $ticket;
-
-        // $ticket->messages()->create($validated);
 
 
         echo test();

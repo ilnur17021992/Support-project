@@ -22,6 +22,11 @@ function checkRole($role)
     return Auth::user()?->inRole(Role::firstWhere('slug', $role));
 }
 
+function checkExistsTicket($user)
+{
+    return $user->tickets()->whereIn('status', ['Processing', 'New'])->count() > 0;
+}
+
 function createUser($message)
 {
     $bot = new BotApi(config('services.telegram_bot_api.token'));
