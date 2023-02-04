@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid;
 
+use App\Models\User;
 use App\Models\Ticket;
 use Orchid\Support\Color;
 use Orchid\Platform\Dashboard;
@@ -84,7 +85,10 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('user')
                 ->route('platform.systems.users')
                 ->permission('platform.systems.users')
-                ->title(__('Access rights')),
+                ->title(__('Access rights'))
+                ->badge(function () {
+                    return User::count();
+                }, Color::PRIMARY()),
 
             Menu::make(__('Roles'))
                 ->icon('lock')
@@ -95,7 +99,8 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bubbles')
                 ->route('platform.ticket.list')
                 ->badge(function () {
-                    // return Ticket::where('status', 'New')->count();
+                    $count = Ticket::where('status', 'New')->count();
+                    if ($count > 0 && checkPermission('platform.systems.support')) return $count;
                 }, Color::SUCCESS()),
 
         ];
