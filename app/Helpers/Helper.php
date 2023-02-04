@@ -14,12 +14,12 @@ function test()
 
 function checkPermission($permission)
 {
-    return Auth::user()->hasAccess($permission);
+    return Auth::user()?->hasAccess($permission);
 }
 
 function checkRole($role)
 {
-    return Auth::user()->inRole(Role::firstWhere('slug', $role));
+    return Auth::user()?->inRole(Role::firstWhere('slug', $role));
 }
 
 function createUser($message)

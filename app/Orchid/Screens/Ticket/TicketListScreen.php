@@ -6,6 +6,7 @@ use App\Models\Ticket;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
 use Illuminate\Http\Request;
+use App\Services\TicketService;
 use Illuminate\Validation\Rule;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
@@ -92,8 +93,8 @@ class TicketListScreen extends Screen
         ];
     }
 
-    public function createTicket(Request $request): void
-    {       
+    public function createTicket(Request $request, TicketService $ticketService): void
+    {
         try {
             $validated = $request->validate([
                 'title' => ['required', 'string', 'max:255'],
@@ -102,18 +103,28 @@ class TicketListScreen extends Screen
                 'file' => ['nullable', 'mimes:pdf,png,jpg,gif', 'max:5120']
             ]);
 
-            $validated['user_id'] = Auth::id();
             $validated['status'] = 'New';
+            $validated['user_id'] = auth()->id();
 
+            $user = auth()->user();
             $message = $validated['message'];
-            $path = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
 
-            $ticket = Ticket::create($validated);
-            $ticket->messages()->create([
-                'user_id' => Auth::id(),
-                'message' => $message,
-                'file' => $path,
-            ]);
+            // $test = $user ->ticket()->whereIn()
+
+                $ticket = Ticket::create($validated);
+
+
+            // $path = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
+
+
+
+            $ticketService->createOrUpdate($user, $message, $ticket);
+
+            // $ticket->messages()->create([
+            //     'user_id' => Auth::id(),
+            //     'message' => $message,
+            //     // 'file' => $path,
+            // ]);
 
             Toast::success('Тикет успешно создан.');
         } catch (\Throwable $e) {

@@ -5,9 +5,9 @@ namespace App\Orchid\Screens\Ticket;
 use App\Models\Ticket;
 use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
 use App\Services\TelegramBotService;
+use App\Services\TicketService;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Input;
@@ -17,7 +17,6 @@ use Orchid\Screen\Screen;
 use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
-use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class TicketMessagesScreen extends Screen
 {
@@ -123,37 +122,19 @@ class TicketMessagesScreen extends Screen
         ];
     }
 
-    public function sendMessage(Request $request, Ticket $ticket, TelegramBotService $bot)
+    public function sendMessage(Request $request, Ticket $ticket, TicketService $ticketService)
     {
         $validated = $request->validate([
             'message' => ['required', 'string', 'max:1024'],
         ]);
 
         try {
-            $validated['user_id'] = Auth::id();
-
             if ($ticket->status == 'Closed') throw new Exception('Ошибка: тикет уже закрыт');
 
-            $ticket->messages()->create($validated);
+            $user = auth()->user();
+            $message = $validated['message'];
 
-            $from = checkPermission('platform.systems.support') ? 'Ответ тех. поддержки 👔' : 'Ответ пользователя ✉️';
-            $group = checkPermission('platform.systems.support') ? 'Support:' : 'User:';
-            $status = checkPermission('platform.systems.support') ? 'Processing' : 'New';
-
-            $ticket->update(['status' => $status]);
-
-            $message =
-                '<b>Time: </b><code>' . date('d.m.Y H:i:s') . '</code>' . "\n" .
-                '<b>Type: </b><code>' . $from . '</code>' . "\n" .
-                '<b>ID: </b><code>' . $ticket->id . '</code>' . "\n" .
-                '<b>Department: </b><code>' . Ticket::DEPARTMENT[$ticket->department] . '</code>' . "\n" .
-                '<b>' . $group . '</b><code> ' . auth('sanctum')->user()->name . '</code>' . "\n" .
-                '<b>Title: </b><code>' . $ticket->title . '</code>' . "\n" .
-                '<b>Message: </b><code>' . $validated['message'] . '</code>' . "\n";
-
-            $keyboard = new InlineKeyboardMarkup([[['text' => 'View ticket', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])]]]);
-
-            $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $message, $keyboard);
+            $ticketService->createOrUpdate($user, $message, $ticket);
 
             Toast::success('Сообщение успешно отправлено.');
         } catch (\Throwable $e) {

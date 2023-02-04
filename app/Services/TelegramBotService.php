@@ -10,10 +10,6 @@ use TelegramBot\Api\Types\Update;
 
 class TelegramBotService
 {
-    public function __construct(public TicketService $ticket)
-    {
-    }
-
     public function __invoke()
     {
         $bot = new Client(config('services.telegram_bot_api.token'));
@@ -23,6 +19,8 @@ class TelegramBotService
         });
 
         $bot->on(function (Update $update) {
+            $ticket = new TicketService();
+
             $message = $update->getMessage();
             if (empty($message)) exit;
 
@@ -32,24 +30,7 @@ class TelegramBotService
 
             if (empty($user)) return $this->sendMessage($id, 'Для начала воспользуйтесь командой: /start');
 
-
-            $ticket = $user->tickets()->where('status', '!=', 'Closed')->latest()->first();
-
-            if (empty($ticket)) {
-                $ticket = Ticket::create([
-                    'title' => 'Telegram',
-                    'department' => 'Other',
-                    'user_id' => $id,
-                    'status' => 'New',
-                ]);
-
-                $this->sendMessage($id, 'Благодарим Вас за обращение! Наши специалисты уже приступают к рассмотрению Вашего вопроса. Ожидайте ответа!');
-            }
-
-            $ticket->messages()->create([
-                'user_id' => $id,
-                'message' => $text,
-            ]);
+            $ticket->createOrUpdate($user, $text);
         }, function () {
             return true;
         });
