@@ -49,7 +49,7 @@ class TicketListLayout extends Table
                     ->route('platform.ticket.messages', $ticket)),
 
             TD::make('user_id', 'Пользователь')
-                ->canSee(checkPermission('platform.systems.users'))
+                ->canSee(checkPermission('platform.systems.support'))
                 ->sort()
                 ->filter(Relation::make()->fromModel(User::class, 'id')->searchColumns('name', 'email')->chunk(10)->displayAppend('full'))
                 ->render(fn (Ticket $ticket) => Link::make(Str::limit($ticket->user->name, 25))

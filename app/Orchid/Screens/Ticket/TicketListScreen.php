@@ -3,20 +3,19 @@
 namespace App\Orchid\Screens\Ticket;
 
 use App\Models\Ticket;
-use Orchid\Screen\Screen;
-use Orchid\Support\Color;
-use Illuminate\Http\Request;
+use App\Orchid\Layouts\Ticket\TicketListLayout;
 use App\Services\TicketService;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
-use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\TextArea;
+use Orchid\Screen\Screen;
+use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
-use Illuminate\Support\Facades\Auth;
-use Orchid\Screen\Actions\ModalToggle;
-use Illuminate\Support\Facades\Storage;
-use App\Orchid\Layouts\Ticket\TicketListLayout;
+use Orchid\Support\Facades\Toast;
 
 class TicketListScreen extends Screen
 {
@@ -27,10 +26,15 @@ class TicketListScreen extends Screen
      */
     public function query(): iterable
     {
-        return [
+        if (checkPermission('platform.systems.support')) return  [
             'tickets' => Ticket::filters()->defaultSort('status')->paginate(),
         ];
+
+        return [
+            'tickets' => auth()->user()->tickets()->filters()->defaultSort('status')->paginate(),
+        ];
     }
+
 
     /**
      * The name of the screen displayed in the header.
@@ -39,7 +43,7 @@ class TicketListScreen extends Screen
      */
     public function name(): ?string
     {
-        return 'Список тикетов';
+        return checkPermission('platform.systems.support') ? 'Список тикетов' : 'Мои тикеты';
     }
 
     /**
@@ -49,14 +53,17 @@ class TicketListScreen extends Screen
      */
     public function commandBar(): iterable
     {
-        return [
-            ModalToggle::make('Создать тикет')
-                ->icon('plus')
-                ->type(Color::PRIMARY())
-                ->modal('modalCreateTicket')
-                ->modalTitle('Создание тикета')
-                ->method('createTicket'),
-        ];
+        if (!checkPermission('platform.systems.support') && auth()->user()->tickets()->whereIn('status', ['Processing', 'New'])->count() == 0)
+            return [
+                ModalToggle::make('Создать тикет')
+                    ->icon('plus')
+                    ->type(Color::PRIMARY())
+                    ->modal('modalCreateTicket')
+                    ->modalTitle('Создание тикета')
+                    ->method('createTicket'),
+            ];
+
+        return [];
     }
 
     /**
@@ -105,26 +112,13 @@ class TicketListScreen extends Screen
 
             $validated['status'] = 'New';
             $validated['user_id'] = auth()->id();
-
             $user = auth()->user();
-            $message = $validated['message'];
 
-            // $test = $user ->ticket()->whereIn()
+            if ($user->tickets()->whereIn('status', ['Processing', 'New'])->count() > 0) throw new Exception('У вас уже есть активный тикет');
 
-                $ticket = Ticket::create($validated);
+            $ticket = Ticket::create($validated);
 
-
-            // $path = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
-
-
-
-            $ticketService->createOrUpdate($user, $message, $ticket);
-
-            // $ticket->messages()->create([
-            //     'user_id' => Auth::id(),
-            //     'message' => $message,
-            //     // 'file' => $path,
-            // ]);
+            $ticketService->createOrUpdate($user, $validated['message'], $ticket);
 
             Toast::success('Тикет успешно создан.');
         } catch (\Throwable $e) {
