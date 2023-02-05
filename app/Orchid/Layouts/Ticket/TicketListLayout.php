@@ -107,6 +107,7 @@ class TicketListLayout extends Table
                             Button::make('Закрыть')
                                 ->icon('close')
                                 ->confirm('Закрытие тикета ID: ' . $ticket->id)
+                                ->canSee($ticket->status != 'Closed')
                                 ->method('closeTicket', [
                                     'id' => $ticket->id,
                                 ]),

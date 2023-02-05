@@ -13,7 +13,7 @@ class TicketService
         $bot = new TelegramBotService();
         $ticket = Ticket::create($ticketData);
 
-        $bot->sendMessage($ticket->user->telegram_id, 'Благодарим Вас за обращение! Наши специалисты уже приступают к рассмотрению Вашего вопроса. Ожидайте ответа!');
+        $bot->sendMessage($ticket->user->telegram_id, 'Благодарим вас за обращение! Наши специалисты уже приступают к рассмотрению вашего вопроса. Ожидайте ответа!');
         $this->send($ticket, $ticketData);
 
         return $ticket;
@@ -37,7 +37,10 @@ class TicketService
             '<b>Title: </b><code>' . $ticket->title . '</code>' . "\n" .
             '<b>Message: </b><code>' . $message['message'] . '</code>' . "\n";
 
-        $keyboard = new InlineKeyboardMarkup([[['text' => 'View ticket', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])]]]);
+        $keyboard = new InlineKeyboardMarkup([[
+            ['text' => '🛟 View', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])],
+            ['text' => '❌ Close', 'callback_data' => 'close_ticket'],
+        ]]);
 
         if ($user->id != $ticket->user->id) $bot->sendMessage($ticket->user->telegram_id, $message['message']);
         $response = $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $ticketMessage, $keyboard);
@@ -49,5 +52,27 @@ class TicketService
         $bot->unpinMessage($pinnedMessageId);
         $ticket->update(['status' => $status]);
         $ticket->messages()->create($message);
+    }
+
+    // public function close($id)
+    // {
+    //     $ticket = Ticket::find($id)->firstWhere('status', '!=', 'Closed');
+
+    //     return $ticket?->update(['status' => 'Closed']);
+
+    // }
+
+    public function close($id)
+    {
+        $bot = new TelegramBotService();
+        $ticket = Ticket::find($id);
+
+        if ($ticket->status == 'Closed') return false;
+
+        $ticket->update(['status' => 'Closed']);
+
+        $bot->sendMessage($ticket->user->telegram_id, 'Спасибо, что обратились в нашу службу поддержки. Если у вас возникнут дополнительные вопросы, мы будем рады на них ответить!');
+
+        return true;
     }
 }

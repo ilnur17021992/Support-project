@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Ticket;
-use Illuminate\Support\Str;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Types\Update;
@@ -21,12 +20,31 @@ class TelegramBotService
         });
 
         $bot->on(function (Update $update) {
+            $bot = new BotApi(config('services.telegram_bot_api.token'));
+            $ticketService = new TicketService();
+
+            $getCallbackQuery = $update->getCallbackQuery();
+            $queryData = $getCallbackQuery?->getData();
+            $queryText = $getCallbackQuery?->getMessage()->getText();
+            
+            if ($queryData === 'close_ticket') {
+                $ticketId = getTicketId($queryText);
+                $result = $ticketService->close($ticketId);
+                $message = $result ? '✅ Тикет с ID ' . $ticketId . ' успешно закрыт.' : '🛑 Тикет с ID ' . $ticketId . ' уже закрыт.';
+                $bot->answerCallbackQuery($update->getCallbackQuery()->getId(), $message, false);
+            }
+
+
+
+
+
+
+
             $message = $update->getMessage();
-            if (empty($message)) exit;
+            if (empty($message)) exit; // FIX
 
             $telegramId = $message->getChat()->getId();
             $user = User::firstWhere('telegram_id', $telegramId);
-            $ticketService = new TicketService();
 
             if ($message->getChat()->getType() == 'private') {
                 if (empty($user)) return $this->sendMessage($telegramId, 'Для начала воспользуйтесь командой: /start');
@@ -46,8 +64,9 @@ class TelegramBotService
             }
 
             if ($telegramId == config('services.telegram_bot_api.ticket_chat_id') && $message->getReplyToMessage()) {
-                $ticketId = Str::of($message->getReplyToMessage()->getText())->match('/ID: ([0-9]+)/');
-                
+                $quotedText = $message->getReplyToMessage()->getText();
+                $ticketId = getTicketId($quotedText);
+
                 if ($ticketId) {
                     $messageId = $message->getReplyToMessage()->getMessageId();
                     info($messageId);

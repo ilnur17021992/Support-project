@@ -1,15 +1,21 @@
 <?php
 
 use App\Models\User;
+use Illuminate\Support\Str;
+use TelegramBot\Api\BotApi;
+use Orchid\Platform\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Orchid\Platform\Models\Role;
-use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 function test()
 {
     return 'best';
+}
+
+function getTicketId(string $text)
+{
+    return Str::of($text)->match('/ID: ([0-9]+)/');
 }
 
 function checkPermission($permission)
@@ -40,26 +46,6 @@ function createUser($message)
         $email = 'user' . $telegramId . '@project.com';
         $password =  getPassword(10);
         $keyboard = new InlineKeyboardMarkup([[['text' => 'Войти в личный кабинет', 'url' => url('/')]]]);
-        // $role = Role::firstWhere('slug', 'user');
-
-        // User::create([
-        //     'telegram_id' => $telegramId,
-        //     'name' => $userName,
-        //     'email' => $email,
-        //     'password' => Hash::make($password),
-        // ])->addRole($role);
-
-        // $ticketUrl = env('APP_URL') . '/admin/tickets/' . $this->ticketId . '/messages';
-
-        // $message = TelegramMessage::create()
-        //     ->to(config('services.telegram-bot-api.ticket_chat_id'))
-        //     ->options(['parse_mode' => 'HTML'])
-        //     ->content($this->ticketMessage)
-        //     ->button('View ticket', $ticketUrl);
-
-        // if (isset($this->fileUrl)) $message = $message->button('Open file', $this->fileUrl);
-
-
         $role = Role::firstWhere('slug', 'user');
 
         $test = User::create([
@@ -78,7 +64,7 @@ function createUser($message)
 function getWelcomeMessage($firstName, $email, $password)
 {
     return
-        'Приветствую Вас, <b><u>' . $firstName . '</u></b>! Спасибо, что обратились в нашу службу поддержки! Ваши данные для входа: ' . "\n" .
+        'Приветствую вас, <b><u>' . $firstName . '</u></b>! Спасибо, что обратились в нашу службу поддержки! Ваши данные для входа: ' . "\n" .
         '<b>Почта</b>: <code>' . $email . "</code>\n" .
         '<b>Пароль</b>: <code>' . $password . "</code>\n";
 }

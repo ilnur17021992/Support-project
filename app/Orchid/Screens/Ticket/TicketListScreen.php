@@ -2,20 +2,20 @@
 
 namespace App\Orchid\Screens\Ticket;
 
-use App\Models\Ticket;
-use App\Orchid\Layouts\Ticket\TicketListLayout;
-use App\Services\TicketService;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Orchid\Screen\Actions\ModalToggle;
-use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Select;
-use Orchid\Screen\Fields\TextArea;
+use App\Models\Ticket;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
-use Orchid\Support\Facades\Layout;
+use Illuminate\Http\Request;
+use App\Services\TicketService;
+use Illuminate\Validation\Rule;
+use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Select;
 use Orchid\Support\Facades\Toast;
+use Orchid\Screen\Fields\TextArea;
+use Orchid\Support\Facades\Layout;
+use Orchid\Screen\Actions\ModalToggle;
+use App\Orchid\Layouts\Ticket\TicketListLayout;
 
 class TicketListScreen extends Screen
 {
@@ -114,8 +114,8 @@ class TicketListScreen extends Screen
             $validated['user_id'] = auth()->id();
 
             if (checkExistsTicket(auth()->user())) throw new Exception('У вас уже есть активный тикет');
-            $ticketService->create($validated);
 
+            $ticketService->create($validated);
             Toast::success('Тикет успешно создан.');
         } catch (\Throwable $e) {
             info($e);
@@ -123,10 +123,10 @@ class TicketListScreen extends Screen
         }
     }
 
-    public function closeTicket(Ticket $ticket)
+    public function closeTicket(Ticket $ticket, TicketService $ticketService)
     {
         try {
-            $ticket->update(['status' => 'Closed']);
+            $ticketService->close($ticket->id);
             Toast::success('Тикет успешно закрыт.');
         } catch (\Throwable $e) {
             info($e);

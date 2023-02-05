@@ -151,10 +151,10 @@ class TicketMessagesScreen extends Screen
         }
     }
 
-    public function closeTicket(Ticket $ticket)
+    public function closeTicket(Ticket $ticket, TicketService $ticketService)
     {
         try {
-            $ticket->update(['status' => 'Closed']);
+            $ticketService->close($ticket->id);
             Toast::success('Тикет успешно закрыт.');
         } catch (\Throwable $e) {
             info($e);
