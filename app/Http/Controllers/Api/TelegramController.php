@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Client;
 use Illuminate\Http\Request;
+use TelegramBot\Api\Exception;
 use App\Http\Controllers\Controller;
 use App\Services\TelegramBotService;
 
@@ -14,7 +15,7 @@ class TelegramController extends Controller
     {
         try {
             $telegramBot($request);
-        } catch (\TelegramBot\Api\Exception $e) {
+        } catch (Exception $e) {
             $e->getMessage();
         }
     }

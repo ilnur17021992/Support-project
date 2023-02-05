@@ -40,14 +40,36 @@ function createUser($message)
         $email = 'user' . $telegramId . '@project.com';
         $password =  getPassword(10);
         $keyboard = new InlineKeyboardMarkup([[['text' => 'Войти в личный кабинет', 'url' => url('/')]]]);
+        // $role = Role::firstWhere('slug', 'user');
+
+        // User::create([
+        //     'telegram_id' => $telegramId,
+        //     'name' => $userName,
+        //     'email' => $email,
+        //     'password' => Hash::make($password),
+        // ])->addRole($role);
+
+        // $ticketUrl = env('APP_URL') . '/admin/tickets/' . $this->ticketId . '/messages';
+
+        // $message = TelegramMessage::create()
+        //     ->to(config('services.telegram-bot-api.ticket_chat_id'))
+        //     ->options(['parse_mode' => 'HTML'])
+        //     ->content($this->ticketMessage)
+        //     ->button('View ticket', $ticketUrl);
+
+        // if (isset($this->fileUrl)) $message = $message->button('Open file', $this->fileUrl);
+
+
         $role = Role::firstWhere('slug', 'user');
 
-        User::create([
+        $test = User::create([
             'telegram_id' => $telegramId,
             'name' => $userName,
             'email' => $email,
             'password' => Hash::make($password),
-        ])->addRole($role);
+        ]);
+
+        if (isset($role)) $test->addRole($role);
 
         $bot->sendMessage($telegramId, getWelcomeMessage($firstName, $email, $password), 'HTML', replyMarkup: $keyboard);
     }

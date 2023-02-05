@@ -40,7 +40,13 @@ class TicketService
         $keyboard = new InlineKeyboardMarkup([[['text' => 'View ticket', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])]]]);
 
         if ($user->id != $ticket->user->id) $bot->sendMessage($ticket->user->telegram_id, $message['message']);
-        $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $ticketMessage, $keyboard);
+        $response = $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $ticketMessage, $keyboard);
+        $pinnedMessageId = $ticket->messages()->latest()->first()?->telegram_message_id;
+        $messageId = $response->getMessageId();
+        $message['telegram_message_id'] = $messageId;
+
+        $user->hasAccess('platform.systems.support') ?: $bot->pinMessage($messageId);
+        $bot->unpinMessage($pinnedMessageId);
         $ticket->update(['status' => $status]);
         $ticket->messages()->create($message);
     }

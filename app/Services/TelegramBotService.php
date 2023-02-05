@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Types\Update;
+use Illuminate\Support\Facades\Http;
 
 class TelegramBotService
 {
@@ -46,13 +47,18 @@ class TelegramBotService
 
             if ($telegramId == config('services.telegram_bot_api.ticket_chat_id') && $message->getReplyToMessage()) {
                 $ticketId = Str::of($message->getReplyToMessage()->getText())->match('/ID: ([0-9]+)/');
-
+                
                 if ($ticketId) {
+                    $messageId = $message->getReplyToMessage()->getMessageId();
+                    info($messageId);
                     $ticket = Ticket::find($ticketId);
+                    $user = User::firstWhere('telegram_id', $message->getFrom()->getId());
                     $message = [
-                        'user_id' => $message->getFrom()->getId(),
+                        'user_id' => $user->id,
                         'message' => $message->getText(),
                     ];
+
+                    $this->unpinMessage($messageId);
                     $ticketService->send($ticket, $message);
                 }
             }
@@ -67,5 +73,20 @@ class TelegramBotService
     {
         $bot = new BotApi(config('services.telegram_bot_api.token'));
         return $bot->sendMessage($id, $message, 'HTML', false, null, $keyboard);
+    }
+
+    public function pinMessage($id)
+    {
+        $bot = new BotApi(config('services.telegram_bot_api.token'));
+        $bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), $id, true);
+    }
+
+    public function unpinMessage($id)
+    {
+        $token = config('services.telegram_bot_api.token');
+        Http::post("https://api.telegram.org/bot$token/unpinChatMessage", [
+            'chat_id' => config('services.telegram_bot_api.ticket_chat_id'),
+            'message_id' => $id,
+        ]);
     }
 }

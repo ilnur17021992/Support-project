@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ticket;
+use Exception;
 use App\Models\User;
+use App\Services\TelegramBotService;
 use Illuminate\Support\Str;
 use TelegramBot\Api\BotApi;
 use Illuminate\Http\Request;
 use App\Services\TicketService;
 use Orchid\Platform\Models\Role;
+use Illuminate\Support\Facades\Http;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use TelegramBot\Api\Types\ReplyKeyboardRemove;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
@@ -54,10 +58,74 @@ class TestController extends Controller
         // $bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), 4, true); // 4 6 7
         // $bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), 6, true); // 4 6 7
         // $bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), 7, true); // 4 6 7
-        // $bot->unpinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), ['message_id' => 4]);
+        // $bot->unpinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), 4);
+
+
+        // $token = config('services.telegram_bot_api.token');
+        // $ticket_chat_id = config('services.telegram_bot_api.ticket_chat_id');
+        // echo file_get_contents("https://api.telegram.org/bot$token/unpinChatMessage?chat_id=$ticket_chat_id&message_id=4"); // Установить Webhook
+
+        // $telegram = new BotApi($token);
+
+        // $chat_id = $ticket_chat_id;
+        // $message_id = 4;
+
+        // try {
+        //     $telegram->unpinChatMessage(['chat_id' => $chat_id, 'message_id' => $message_id]);
+        //     echo "Message unpinned successfully";
+        // } catch (Exception $e) {
+        //     echo "Error unpinning message: " . $e->getMessage();
+        // }
+
+
+        // $response = Http::post('https://api.telegram.org/bot<token>/unpinChatMessage', [
+        //     'chat_id' => config('services.telegram_bot_api.ticket_chat_id'),
+        //     'message_id' => 4,
+        // ]);
+
+        // if ($response->successful()) {
+        //     echo "Message unpinned successfully";
+        // } else {
+        //     echo "Error unpinning message: " . $e->getMessage();
+        // }
+
+        // try {
+        //     $token = config('services.telegram_bot_api.token');
+
+        //     $response = Http::post("https://api.telegram.org/bot$token/unpinChatMessage", [
+        //         'chat_id' => config('services.telegram_bot_api.ticket_chat_id'),
+        //         'message_id' => 7,
+        //     ]);
+        //     if ($response->successful()) {
+        //         echo "Message unpinned successfully";
+        //     } else {
+        //         echo "Error unpinning message";
+        //     }
+        // } catch (Exception $e) {
+        //     echo "Error unpinning message: " . $e->getMessage();
+        // }
 
 
 
-        echo test();
+        // $bot = new TelegramBotService();
+
+        // $bot->pinMessage(4);
+        // $bot->pinMessage(6);
+        // $bot->pinMessage(7);
+
+        // $bot->unpinMessage(7);
+
+
+        // echo test();
+
+
+        // $tgUserId = 779740786;
+        // $user = User::firstWhere('telegram_id', $tgUserId);
+
+        // return $user->id;
+
+        $ticket = Ticket::find(2);
+        return $ticket->messages()->latest()->first()?->telegram_message_id;
+        // return $ticket->messages()->get()->latest();
     }
 }
