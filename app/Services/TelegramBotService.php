@@ -23,12 +23,12 @@ class TelegramBotService
             $message = $update->getMessage();
             if (empty($message)) exit;
 
-            $id = $message->getChat()->getId();
-            $user = User::find($id);
+            $telegramId = $message->getChat()->getId();
+            $user = User::firstWhere('telegram_id', $telegramId);
             $ticketService = new TicketService();
 
             if ($message->getChat()->getType() == 'private') {
-                if (empty($user)) return $this->sendMessage($id, 'Для начала воспользуйтесь командой: /start');
+                if (empty($user)) return $this->sendMessage($telegramId, 'Для начала воспользуйтесь командой: /start');
 
                 $ticket = $user->tickets()->where('status', '!=', 'Closed')->latest()->first();
                 $ticketData = [
@@ -44,8 +44,7 @@ class TelegramBotService
                     : $ticketService->send($ticket, $ticketData);
             }
 
-            // FIX Нужно отключить Privacy Mode у бота в BotFather: https://core.telegram.org/bots/features#privacy-mode
-            if ($id == config('services.telegram_bot_api.ticket_chat_id') && $message->getReplyToMessage()) {
+            if ($telegramId == config('services.telegram_bot_api.ticket_chat_id') && $message->getReplyToMessage()) {
                 $ticketId = Str::of($message->getReplyToMessage()->getText())->match('/ID: ([0-9]+)/');
 
                 if ($ticketId) {

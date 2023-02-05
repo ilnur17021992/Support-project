@@ -13,7 +13,7 @@ class TicketService
         $bot = new TelegramBotService();
         $ticket = Ticket::create($ticketData);
 
-        $bot->sendMessage($ticketData['user_id'], 'Благодарим Вас за обращение! Наши специалисты уже приступают к рассмотрению Вашего вопроса. Ожидайте ответа!');
+        $bot->sendMessage($ticket->user->telegram_id, 'Благодарим Вас за обращение! Наши специалисты уже приступают к рассмотрению Вашего вопроса. Ожидайте ответа!');
         $this->send($ticket, $ticketData);
 
         return $ticket;
@@ -39,7 +39,7 @@ class TicketService
 
         $keyboard = new InlineKeyboardMarkup([[['text' => 'View ticket', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])]]]);
 
-        if ($user->id != $ticket->user->id) $bot->sendMessage($ticket->user->id, $message['message']);
+        if ($user->id != $ticket->user->id) $bot->sendMessage($ticket->user->telegram_id, $message['message']);
         $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $ticketMessage, $keyboard);
         $ticket->update(['status' => $status]);
         $ticket->messages()->create($message);

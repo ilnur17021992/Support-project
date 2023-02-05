@@ -30,26 +30,26 @@ function checkExistsTicket($user)
 function createUser($message)
 {
     $bot = new BotApi(config('services.telegram_bot_api.token'));
-    $id = $message->getChat()->getId();
-    $user = User::find($id);
+    $telegramId = $message->getChat()->getId();
+    $user = User::firstWhere('telegram_id', $telegramId);
 
-    if (!$user && $id > 0) {
+    if (!$user && $telegramId > 0) {
         $fromUser = $message->getFrom();
-        $userName = 'User' . $id;
+        $userName = 'User' . $telegramId;
         $firstName = $fromUser->getFirstName();
-        $email = 'user' . $id . '@project.com';
+        $email = 'user' . $telegramId . '@project.com';
         $password =  getPassword(10);
         $keyboard = new InlineKeyboardMarkup([[['text' => 'Войти в личный кабинет', 'url' => url('/')]]]);
         $role = Role::firstWhere('slug', 'user');
 
         User::create([
-            'id' => $id,
+            'telegram_id' => $telegramId,
             'name' => $userName,
             'email' => $email,
             'password' => Hash::make($password),
         ])->addRole($role);
 
-        $bot->sendMessage($id, getWelcomeMessage($firstName, $email, $password), 'HTML', replyMarkup: $keyboard);
+        $bot->sendMessage($telegramId, getWelcomeMessage($firstName, $email, $password), 'HTML', replyMarkup: $keyboard);
     }
 }
 

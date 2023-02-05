@@ -13,6 +13,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'id',
+        'telegram_id',
         'name',
         'email',
         'password',
@@ -47,6 +48,7 @@ class User extends Authenticatable
      */
     protected $allowedFilters = [
         'id',
+        'telegram_id',
         'name',
         'email',
         'permissions',
@@ -59,6 +61,7 @@ class User extends Authenticatable
      */
     protected $allowedSorts = [
         'id',
+        'telegram_id',
         'name',
         'email',
         'updated_at',
