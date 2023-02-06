@@ -23,10 +23,11 @@ class TelegramBotService
             $bot = new BotApi(config('services.telegram_bot_api.token'));
             $ticketService = new TicketService();
 
+            // Обработка нажатия кнопки закрытия тикета
             $getCallbackQuery = $update->getCallbackQuery();
             $queryData = $getCallbackQuery?->getData();
             $queryText = $getCallbackQuery?->getMessage()->getText();
-            
+
             if ($queryData === 'close_ticket') {
                 $ticketId = getTicketId($queryText);
                 $result = $ticketService->close($ticketId);
@@ -37,6 +38,7 @@ class TelegramBotService
             $message = $update->getMessage();
             if (empty($message)) exit; // FIX
 
+            // Получение сообщения
             $telegramId = $message->getChat()->getId();
             $user = User::firstWhere('telegram_id', $telegramId);
 
@@ -57,6 +59,7 @@ class TelegramBotService
                     : $ticketService->send($ticket, $ticketData);
             }
 
+            // Обработка цитирования в чате поддержки
             if ($telegramId == config('services.telegram_bot_api.ticket_chat_id') && $message->getReplyToMessage()) {
                 $quotedText = $message->getReplyToMessage()->getText();
                 $ticketId = getTicketId($quotedText);

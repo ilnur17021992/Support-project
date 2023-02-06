@@ -38,8 +38,6 @@ class TicketService
             '<b>Title: </b><code>' . $ticket->title . '</code>' . "\n" .
             '<b>Message: </b><code>' . $message['message'] . '</code>' . "\n";
 
-        $message['file'] = isset($message['file']) ? Storage::putFile('files', $message['file'], 'public') : null;
-
         $buttons = [['text' => '🛟 View', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])]];
         if (isset($message['file'])) $buttons[] = ['text' => '💾 Open', 'url' => Storage::url($message['file'])];
         $buttons[] = ['text' => '❌ Close', 'callback_data' => 'close_ticket'];

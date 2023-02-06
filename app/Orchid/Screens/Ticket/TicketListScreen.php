@@ -15,6 +15,7 @@ use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Support\Facades\Layout;
 use Orchid\Screen\Actions\ModalToggle;
+use Illuminate\Support\Facades\Storage;
 use App\Orchid\Layouts\Ticket\TicketListLayout;
 
 class TicketListScreen extends Screen
@@ -107,11 +108,12 @@ class TicketListScreen extends Screen
                 'title' => ['required', 'string', 'max:255'],
                 'department' => ['required', Rule::in(array_keys(Ticket::DEPARTMENT))],
                 'message' => ['required', 'string', 'max:1024'],
-                'file' => ['nullable', 'mimes:pdf,png,jpg,gif', 'max:5120']
+                'file' => ['nullable', 'mimes:png,jpg,gif', 'max:5120']
             ]);
 
             $validated['status'] = 'New';
             $validated['user_id'] = auth()->id();
+            $validated['file'] = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
 
             if (checkExistsTicket(auth()->user())) throw new Exception('У вас уже есть активный тикет');
 

@@ -17,7 +17,6 @@ use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Support\Facades\Layout;
-use App\Services\TelegramBotService;
 use Illuminate\Support\Facades\Storage;
 use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
 
@@ -135,12 +134,13 @@ class TicketMessagesScreen extends Screen
     {
         $validated = $request->validate([
             'message' => ['required', 'string', 'max:1024'],
-            'file' => ['nullable', 'mimes:pdf,png,jpg,gif', 'max:5120'],
+            'file' => ['nullable', 'mimes:png,jpg,gif', 'max:5120'],
         ]);
 
         try {
             if ($ticket->status == 'Closed') throw new Exception('Ошибка: тикет уже закрыт');
             $validated['user_id'] = auth()->id();
+            $validated['file'] = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
             $ticketService->send($ticket, $validated);
 
             Toast::success('Сообщение успешно отправлено.');
