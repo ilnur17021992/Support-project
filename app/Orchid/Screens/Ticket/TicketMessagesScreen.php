@@ -2,21 +2,24 @@
 
 namespace App\Orchid\Screens\Ticket;
 
-use App\Models\Ticket;
-use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
-use App\Services\TelegramBotService;
-use App\Services\TicketService;
 use Exception;
-use Illuminate\Http\Request;
-use Orchid\Screen\Actions\Button;
-use Orchid\Screen\Actions\Link;
-use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Select;
-use Orchid\Screen\Fields\TextArea;
+use App\Models\Ticket;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
-use Orchid\Support\Facades\Layout;
+use Illuminate\Http\Request;
+use App\Services\TicketService;
+use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\Group;
+use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Actions\Button;
+use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Toast;
+use Orchid\Screen\Fields\TextArea;
+use Orchid\Support\Facades\Layout;
+use App\Services\TelegramBotService;
+use Illuminate\Support\Facades\Storage;
+use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
 
 class TicketMessagesScreen extends Screen
 {
@@ -76,10 +79,16 @@ class TicketMessagesScreen extends Screen
                 TextArea::make('message')
                     ->placeholder('Введите текст ответа')
                     ->rows(9),
-                Button::make('Отправить')
-                    ->icon('paper-plane')
-                    ->method('sendMessage')
-                    ->type(Color::PRIMARY()),
+
+                Group::make([
+                    Button::make('Отправить')
+                        ->icon('paper-plane')
+                        ->method('sendMessage')
+                        ->type(Color::PRIMARY()),
+
+                    Input::make('file')
+                        ->type('file'),
+                ]),
             ]),
         ];
 
@@ -126,6 +135,7 @@ class TicketMessagesScreen extends Screen
     {
         $validated = $request->validate([
             'message' => ['required', 'string', 'max:1024'],
+            'file' => ['nullable', 'mimes:pdf,png,jpg,gif', 'max:5120'],
         ]);
 
         try {
@@ -136,7 +146,7 @@ class TicketMessagesScreen extends Screen
             Toast::success('Сообщение успешно отправлено.');
         } catch (\Throwable $e) {
             info($e);
-            Toast::error($e->getMessage());
+            Alert::error($e->getMessage());
         }
     }
 

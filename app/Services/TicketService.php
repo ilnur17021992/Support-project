@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Ticket;
+use Illuminate\Support\Facades\Storage;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 class TicketService
@@ -37,10 +38,12 @@ class TicketService
             '<b>Title: </b><code>' . $ticket->title . '</code>' . "\n" .
             '<b>Message: </b><code>' . $message['message'] . '</code>' . "\n";
 
-        $keyboard = new InlineKeyboardMarkup([[
-            ['text' => '🛟 View', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])],
-            ['text' => '❌ Close', 'callback_data' => 'close_ticket'],
-        ]]);
+        $message['file'] = isset($message['file']) ? Storage::putFile('files', $message['file'], 'public') : null;
+
+        $buttons = [['text' => '🛟 View', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])]];
+        if (isset($message['file'])) $buttons[] = ['text' => '💾 Open', 'url' => Storage::url($message['file'])];
+        $buttons[] = ['text' => '❌ Close', 'callback_data' => 'close_ticket'];
+        $keyboard = new InlineKeyboardMarkup([$buttons]);
 
         if ($user->id != $ticket->user->id) $bot->sendMessage($ticket->user->telegram_id, $message['message']);
         $response = $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $ticketMessage, $keyboard);

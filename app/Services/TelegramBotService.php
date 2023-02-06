@@ -34,12 +34,6 @@ class TelegramBotService
                 $bot->answerCallbackQuery($update->getCallbackQuery()->getId(), $message, false);
             }
 
-
-
-
-
-
-
             $message = $update->getMessage();
             if (empty($message)) exit; // FIX
 

@@ -27,11 +27,11 @@ class TicketListScreen extends Screen
     public function query(): iterable
     {
         if (checkPermission('platform.systems.support')) return  [
-            'tickets' => Ticket::filters()->defaultSort('status')->paginate(),
+            'tickets' => Ticket::filters()->defaultSort('id', 'desc')->paginate(),
         ];
 
         return [
-            'tickets' => auth()->user()->tickets()->filters()->defaultSort('status')->paginate(),
+            'tickets' => auth()->user()->tickets()->filters()->defaultSort('id', 'desc')->paginate(),
         ];
     }
 
@@ -93,8 +93,8 @@ class TicketListScreen extends Screen
                         ->rows(5)
                         ->required(),
 
-                    // Input::make('file')
-                    //     ->type('file'),
+                    Input::make('file')
+                        ->type('file'),
                 ]),
             ])->applyButton('Создать'),
         ];

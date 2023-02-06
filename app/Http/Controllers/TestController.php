@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ticket;
+use CURLFile;
 use Exception;
 use App\Models\User;
-use App\Services\TelegramBotService;
+use App\Models\Ticket;
 use Illuminate\Support\Str;
 use TelegramBot\Api\BotApi;
 use Illuminate\Http\Request;
 use App\Services\TicketService;
 use Orchid\Platform\Models\Role;
+use App\Services\TelegramBotService;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use TelegramBot\Api\Types\ReplyKeyboardMarkup;
 use TelegramBot\Api\Types\ReplyKeyboardRemove;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
@@ -124,8 +126,20 @@ class TestController extends Controller
 
         // return $user->id;
 
-        $ticket = Ticket::find(2);
-        return $ticket->messages()->latest()->first()?->telegram_message_id;
-        // return $ticket->messages()->get()->latest();
+
+
+        // public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png
+
+        return Storage::url('public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png');
+
+
+
+        $file = __DIR__ . '/storage/app/public/5GTFdAUAttBl6Ba4sjq6jgs8gAX0kjwPSQwUud4B.png';
+
+        $contents = Storage::get('public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png');
+
+        $document = new CURLFile('public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png');
+
+        $bot->sendDocument(config('services.telegram_bot_api.ticket_chat_id'), $document);
     }
 }
