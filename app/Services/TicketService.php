@@ -44,23 +44,14 @@ class TicketService
 
         if ($user->id != $ticket->user->id) $bot->sendMessage($ticket->user->telegram_id, $message['message']);
         $response = $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $ticketMessage, $keyboard);
-        $pinnedMessageId = $ticket->messages()->latest()->first()?->telegram_message_id;
         $messageId = $response->getMessageId();
         $message['telegram_message_id'] = $messageId;
 
         $user->hasAccess('platform.systems.support') ?: $bot->pinMessage($messageId);
-        $bot->unpinMessage($pinnedMessageId);
+        if ($ticket->messages()->count() > 1) $ticket->messages->each(fn ($message) => $bot->unpinMessage($message->telegram_message_id));
         $ticket->update(['status' => $status]);
         $ticket->messages()->create($message);
     }
-
-    // public function close($id)
-    // {
-    //     $ticket = Ticket::find($id)->firstWhere('status', '!=', 'Closed');
-
-    //     return $ticket?->update(['status' => 'Closed']);
-
-    // }
 
     public function close($id)
     {
@@ -70,7 +61,7 @@ class TicketService
         if ($ticket->status == 'Closed') return false;
 
         $ticket->update(['status' => 'Closed']);
-
+        $ticket->messages->each(fn ($message) => $bot->unpinMessage($message->telegram_message_id));
         $bot->sendMessage($ticket->user->telegram_id, 'Спасибо, что обратились в нашу службу поддержки. Если у вас возникнут дополнительные вопросы, мы будем рады на них ответить!');
 
         return true;
