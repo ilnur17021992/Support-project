@@ -6,19 +6,20 @@ use Orchid\Platform\Models\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+    private const ATTRIBUTES = [
         'id',
         'telegram_id',
         'name',
         'email',
         'password',
         'permissions',
+        'created_at',
+        'updated_at'
     ];
+
+    protected $fillable = self::ATTRIBUTES;
+    protected $allowedFilters = self::ATTRIBUTES;
+    protected $allowedSorts = self::ATTRIBUTES;
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -39,33 +40,6 @@ class User extends Authenticatable
     protected $casts = [
         'permissions'          => 'array',
         'email_verified_at'    => 'datetime',
-    ];
-
-    /**
-     * The attributes for which you can use filters in url.
-     *
-     * @var array
-     */
-    protected $allowedFilters = [
-        'id',
-        'telegram_id',
-        'name',
-        'email',
-        'permissions',
-    ];
-
-    /**
-     * The attributes for which can use sort in url.
-     *
-     * @var array
-     */
-    protected $allowedSorts = [
-        'id',
-        'telegram_id',
-        'name',
-        'email',
-        'updated_at',
-        'created_at',
     ];
 
     public function tickets()

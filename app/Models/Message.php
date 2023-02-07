@@ -12,7 +12,11 @@ class Message extends Model
     use HasFactory, Filterable, AsSource;
 
     protected $fillable = [
-        'user_id', 'ticket_id', 'telegram_message_id', 'message', 'file',
+        'user_id',
+        'ticket_id',
+        'telegram_message_id',
+        'message',
+        'file',
     ];
 
     public function user()

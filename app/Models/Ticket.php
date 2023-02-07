@@ -11,17 +11,19 @@ class Ticket extends Model
 {
     use HasFactory, Filterable, AsSource;
 
-    protected $fillable = [
-        'user_id', 'title', 'department', 'status'
+    private const ATTRIBUTES = [
+        'id',
+        'user_id',
+        'title',
+        'department',
+        'status',
+        'created_at',
+        'updated_at'
     ];
 
-    protected $allowedFilters = [
-        'id', 'user_id', 'title', 'department', 'status', 'created_at', 'updated_at'
-    ];
-
-    protected $allowedSorts = [
-        'id', 'user_id', 'title', 'department', 'status', 'created_at', 'updated_at'
-    ];
+    protected $fillable = self::ATTRIBUTES;
+    protected $allowedFilters = self::ATTRIBUTES;
+    protected $allowedSorts = self::ATTRIBUTES;
 
     public const STATUS = [
         'New' => 'Новый',
