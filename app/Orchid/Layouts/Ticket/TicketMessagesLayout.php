@@ -29,10 +29,10 @@ class TicketMessagesLayout extends Table
     {
         return [
             TD::make('user_id', 'Автор')
-                // ->render(fn (Message $message) => $message->user->name),
                 ->render(function (Message $message) {
                     $color = $message->user->hasAccess('platform.systems.support') ? 'red' : 'blue';
-                    return Link::make($message->user->name)->style("color: $color !important");
+                    return Link::make($message->user->name)->style("color: $color !important")
+                        ->route('platform.systems.users.edit', $message->user->id);
                 }),
 
             TD::make('message', 'Сообщение')
