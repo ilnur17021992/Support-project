@@ -2,11 +2,12 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\User;
 use App\Models\Ticket;
-use Exception;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Client;
+use Orchid\Platform\Models\Role;
 use TelegramBot\Api\Types\Update;
 use Illuminate\Support\Facades\Http;
 
@@ -18,6 +19,38 @@ class TelegramBotService
 
         $bot->command('start', function ($message) {
             createUser($message);
+        });
+
+        $bot->command('admin', function ($message) {
+            $chatId = $message->getChat()->getId();
+            $fromId = $message->getFrom()->getId();
+
+            if ($chatId == config('services.telegram_bot_api.ticket_chat_id')) {
+                $user = User::firstWhere('telegram_id', $fromId);
+                $admin = Role::firstWhere('slug', 'admin');
+
+                if (empty($user)) return $this->sendMessage($chatId, 'Для начала воспользуйтесь командой: /start');
+                if ($user->inRole($admin)) return $this->sendMessage($chatId, 'У вас уже есть роль Admin.');
+
+                $user->addRole($admin);
+                $this->sendMessage($chatId, 'Роль Admin успешно выдана.');
+            }
+        });
+
+        $bot->command('support', function ($message) {
+            $chatId = $message->getChat()->getId();
+            $fromId = $message->getFrom()->getId();
+
+            if ($chatId == config('services.telegram_bot_api.ticket_chat_id')) {
+                $user = User::firstWhere('telegram_id', $fromId);
+                $support = Role::firstWhere('slug', 'support');
+
+                if (empty($user)) return $this->sendMessage($chatId, 'Для начала воспользуйтесь командой: /start');
+                if ($user->inRole($support)) return $this->sendMessage($chatId, 'У вас уже есть роль Support.');
+
+                $user->addRole($support);
+                $this->sendMessage($chatId, 'Роль Support успешно выдана.');
+            }
         });
 
         $bot->on(function (Update $update) {
@@ -37,7 +70,7 @@ class TelegramBotService
             }
 
             $message = $update->getMessage();
-            if (empty($message)) exit; // FIX
+            if (empty($message)) exit;
 
             // Получение сообщения
             $telegramId = $message->getChat()->getId();

@@ -143,8 +143,13 @@ class TestController extends Controller
         //     $bot->sendDocument(config('services.telegram_bot_api.ticket_chat_id'), $document);
 
         // ->where('created_at', '>=', Carbon::now()->subHour())->orderBy('created_at', 'asc')->get();
-        $ticket = Ticket::find(48);
-        return $ticket->messages()->orderBy('created_at', 'desc')->first()->telegram_message_id;
-        return $ticket->messages()->latest()->get();
+        // $ticket = Ticket::find(48);
+        // return $ticket->messages()->orderBy('created_at', 'desc')->first()->telegram_message_id;
+        // return $ticket->messages()->latest()->get();
+
+        $user = User::firstWhere('telegram_id', 1088796423);
+        $admin = Role::firstWhere('slug', 'admin');
+
+        return $user->inRole($admin);
     }
 }
