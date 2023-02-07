@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Ticket;
+use App\Notifications\NewMessage;
 use Illuminate\Support\Facades\Storage;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
@@ -24,10 +25,16 @@ class TicketService
     {
         $bot = new TelegramBotService();
         $user = User::find($message['user_id']);
+        $text = $message['message'];
+        $url = route('platform.ticket.messages', ['ticket' => $ticket->id]);
         $group = $user->hasAccess('platform.systems.support') ? 'Support:' : 'User:';
         $status = $user->hasAccess('platform.systems.support') ? 'Processing' : 'New';
         $type = $user->hasAccess('platform.systems.support') ? 'Ответ тех. поддержки 👔' : 'Ответ пользователя ✉️';
         if ($ticket->messages()->count() == 0) $type = 'Новый тикет 🛟';
+
+        $user->hasAccess('platform.systems.support')
+            ? $ticket->user->notify(new NewMessage($user->name, $text, $url))
+            : User::where('permissions->platform.systems.support', 1)->get()->each(fn ($support) => $support->notify(new NewMessage($user->name, $text, $url)));
 
         $ticketMessage =
             '<b>Time: </b><code>' . date('d.m.Y H:i:s') . '</code>' . "\n" .
@@ -36,16 +43,15 @@ class TicketService
             '<b>Department: </b><code>' . Ticket::DEPARTMENT[$ticket->department] . '</code>' . "\n" .
             '<b>' . $group . '</b><code> ' . $user->name . '</code>' . "\n" .
             '<b>Title: </b><code>' . $ticket->title . '</code>' . "\n" .
-            '<b>Message: </b><code>' . $message['message'] . '</code>' . "\n";
+            '<b>Message: </b><code>' . $text . '</code>' . "\n";
 
-        $buttons = [['text' => '🛟 View', 'url' => route('platform.ticket.messages', ['ticket' => $ticket->id])]];
+        $buttons = [['text' => '🛟 View', 'url' => $url]];
         if (isset($message['file'])) $buttons[] = ['text' => '💾 Open', 'url' => Storage::url($message['file'])];
         $buttons[] = ['text' => '❌ Close', 'callback_data' => 'close_ticket'];
         $keyboard = new InlineKeyboardMarkup([$buttons]);
 
-        if ($user->id != $ticket->user->id) $bot->sendMessage($ticket->user->telegram_id, $message['message']);
-        $response = $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $ticketMessage, $keyboard);
-        $messageId = $response->getMessageId();
+        if ($user->id != $ticket->user->id) $bot->sendMessage($ticket->user->telegram_id, $text);
+        $messageId = $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $ticketMessage, $keyboard)->getMessageId();
         $message['telegram_message_id'] = $messageId;
         $lastMessage = $ticket->messages()->latest()->first();
 
