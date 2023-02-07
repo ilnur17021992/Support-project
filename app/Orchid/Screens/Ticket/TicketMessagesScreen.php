@@ -157,7 +157,7 @@ class TicketMessagesScreen extends Screen
             Toast::success('Тикет успешно обновлен.');
         } catch (\Throwable $e) {
             info($e);
-            Toast::error($e->getMessage());
+            Alert::error($e->getMessage());
         }
     }
 
@@ -168,7 +168,7 @@ class TicketMessagesScreen extends Screen
             Toast::success('Тикет успешно закрыт.');
         } catch (\Throwable $e) {
             info($e);
-            Toast::error($e->getMessage());
+            Alert::error($e->getMessage());
         }
     }
 

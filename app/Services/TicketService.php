@@ -47,9 +47,10 @@ class TicketService
         $response = $bot->sendMessage(config('services.telegram_bot_api.ticket_chat_id'), $ticketMessage, $keyboard);
         $messageId = $response->getMessageId();
         $message['telegram_message_id'] = $messageId;
+        $lastMessage = $ticket->messages()->latest()->first();
 
+        if ($lastMessage) $bot->unpinMessage($lastMessage->telegram_message_id);
         $user->hasAccess('platform.systems.support') ?: $bot->pinMessage($messageId);
-        if ($ticket->messages()->count() > 1) $ticket->messages->each(fn ($message) => $bot->unpinMessage($message->telegram_message_id));
         $ticket->update(['status' => $status]);
         $ticket->messages()->create($message);
     }
@@ -58,11 +59,12 @@ class TicketService
     {
         $bot = new TelegramBotService();
         $ticket = Ticket::find($id);
+        $lastMessage = $ticket->messages()->latest()->first();;
 
         if ($ticket->status == 'Closed') return false;
 
         $ticket->update(['status' => 'Closed']);
-        $ticket->messages->each(fn ($message) => $bot->unpinMessage($message->telegram_message_id));
+        $bot->unpinMessage($lastMessage->telegram_message_id);
         $bot->sendMessage($ticket->user->telegram_id, 'Спасибо, что обратились в нашу службу поддержки. Если у вас возникнут дополнительные вопросы, мы будем рады на них ответить!');
 
         return true;

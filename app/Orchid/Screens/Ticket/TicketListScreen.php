@@ -11,6 +11,7 @@ use App\Services\TicketService;
 use Illuminate\Validation\Rule;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
+use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Support\Facades\Layout;
@@ -121,7 +122,7 @@ class TicketListScreen extends Screen
             Toast::success('Тикет успешно создан.');
         } catch (\Throwable $e) {
             info($e);
-            Toast::error($e->getMessage());
+            Alert::error($e->getMessage());
         }
     }
 
@@ -132,7 +133,7 @@ class TicketListScreen extends Screen
             Toast::success('Тикет успешно закрыт.');
         } catch (\Throwable $e) {
             info($e);
-            Toast::error($e->getMessage());
+            Alert::error($e->getMessage());
         }
     }
 
@@ -143,7 +144,7 @@ class TicketListScreen extends Screen
             Toast::success('Тикет успешно удален.');
         } catch (\Throwable $e) {
             info($e);
-            Toast::error($e->getMessage());
+            Alert::error($e->getMessage());
         }
     }
 }

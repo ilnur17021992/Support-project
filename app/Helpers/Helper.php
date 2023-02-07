@@ -1,11 +1,10 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Str;
-use TelegramBot\Api\BotApi;
-use Orchid\Platform\Models\Role;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Orchid\Platform\Models\Role;
+use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Types\Inline\InlineKeyboardMarkup;
 
 function test()
@@ -20,12 +19,12 @@ function getTicketId(string $text)
 
 function checkPermission($permission)
 {
-    return Auth::user()?->hasAccess($permission);
+    return auth()->user()?->hasAccess($permission);
 }
 
 function checkRole($role)
 {
-    return Auth::user()?->inRole(Role::firstWhere('slug', $role));
+    return auth()->user()?->inRole(Role::firstWhere('slug', $role));
 }
 
 function checkExistsTicket($user)

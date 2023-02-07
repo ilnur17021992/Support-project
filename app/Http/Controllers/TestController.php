@@ -130,16 +130,21 @@ class TestController extends Controller
 
         // public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png
 
-        return Storage::url('public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png');
+        //     return Storage::url('public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png');
 
 
 
-        $file = __DIR__ . '/storage/app/public/5GTFdAUAttBl6Ba4sjq6jgs8gAX0kjwPSQwUud4B.png';
+        //     $file = __DIR__ . '/storage/app/public/5GTFdAUAttBl6Ba4sjq6jgs8gAX0kjwPSQwUud4B.png';
 
-        $contents = Storage::get('public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png');
+        //     $contents = Storage::get('public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png');
 
-        $document = new CURLFile('public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png');
+        //     $document = new CURLFile('public/files/yeFhZv43vVlbusOaWrEWrZt9IOhiF7mrdYDGFMYC.png');
 
-        $bot->sendDocument(config('services.telegram_bot_api.ticket_chat_id'), $document);
+        //     $bot->sendDocument(config('services.telegram_bot_api.ticket_chat_id'), $document);
+
+        // ->where('created_at', '>=', Carbon::now()->subHour())->orderBy('created_at', 'asc')->get();
+        $ticket = Ticket::find(48);
+        return $ticket->messages()->orderBy('created_at', 'desc')->first()->telegram_message_id;
+        return $ticket->messages()->latest()->get();
     }
 }

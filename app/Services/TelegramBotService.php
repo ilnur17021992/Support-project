@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Ticket;
+use Exception;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Client;
 use TelegramBot\Api\Types\Update;
@@ -66,7 +67,6 @@ class TelegramBotService
 
                 if ($ticketId) {
                     $messageId = $message->getReplyToMessage()->getMessageId();
-                    info($messageId);
                     $ticket = Ticket::find($ticketId);
                     $user = User::firstWhere('telegram_id', $message->getFrom()->getId());
                     $message = [
@@ -100,9 +100,11 @@ class TelegramBotService
     public function unpinMessage($id)
     {
         $token = config('services.telegram_bot_api.token');
-        Http::post("https://api.telegram.org/bot$token/unpinChatMessage", [
+        $response = Http::post("https://api.telegram.org/bot$token/unpinChatMessage", [
             'chat_id' => config('services.telegram_bot_api.ticket_chat_id'),
             'message_id' => $id,
         ]);
+
+        if (!$response['ok']) throw new Exception($response);
     }
 }
