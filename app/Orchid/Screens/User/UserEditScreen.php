@@ -85,17 +85,17 @@ class UserEditScreen extends Screen
         return [
             Button::make(__('Impersonate user'))
                 ->icon('login')
-                ->confirm(__('You can revert to your original state by logging out.'))
+                ->confirm('Вы можете вернуться в исходное состояние, выйдя из системы.')
                 ->method('loginAs')
                 ->canSee($this->user->exists && \request()->user()->id !== $this->user->id),
 
             Button::make(__('Remove'))
                 ->icon('trash')
-                ->confirm(__('Once the account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.'))
+                ->confirm('Как только учетная запись будет удалена, все ее ресурсы и данные будут удалены без возможности восстановления!')
                 ->method('remove')
                 ->canSee($this->user->exists),
 
-            Button::make(__('Save'))
+            Button::make('Сохранить')
                 ->icon('check')
                 ->method('save'),
         ];
@@ -107,7 +107,6 @@ class UserEditScreen extends Screen
     public function layout(): iterable
     {
         return [
-
             Layout::block(UserEditLayout::class)
                 ->title(__('Profile Information'))
                 ->description(__('Update your account\'s profile information and email address.'))

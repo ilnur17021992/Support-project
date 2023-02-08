@@ -66,13 +66,13 @@ class TicketListLayout extends Table
                 ->filter(Select::make()->options(Ticket::STATUS)->empty('Не выбрано'))
                 ->render(function (Ticket $ticket) {
                     return match ($ticket->status) {
-                        'New' => Link::make(Ticket::STATUS['New'])
+                        'new' => Link::make(Ticket::STATUS['new'])
                             ->style('color: green !important')
                             ->route('platform.ticket.messages', $ticket),
-                        'Processing' => Link::make(Ticket::STATUS['Processing'])
+                        'processing' => Link::make(Ticket::STATUS['processing'])
                             ->style('color: blue !important')
                             ->route('platform.ticket.messages', $ticket),
-                        'Closed' => Link::make(Ticket::STATUS['Closed'])
+                        'closed' => Link::make(Ticket::STATUS['closed'])
                             ->style('color: red !important')
                             ->route('platform.ticket.messages', $ticket),
                     };
@@ -107,7 +107,7 @@ class TicketListLayout extends Table
                             Button::make('Закрыть')
                                 ->icon('close')
                                 ->confirm('Закрытие тикета ID: ' . $ticket->id)
-                                ->canSee($ticket->status != 'Closed')
+                                ->canSee($ticket->status != 'closed')
                                 ->method('closeTicket', [
                                     'id' => $ticket->id,
                                 ]),

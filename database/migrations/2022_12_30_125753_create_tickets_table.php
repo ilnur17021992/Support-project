@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             $table->string('title');
-            $table->enum('department', ['Moderation', 'Other']);
-            $table->enum('status', ['New', 'Processing', 'Closed']);
+            $table->enum('department', ['telegram', 'other']);
+            $table->enum('status', ['new', 'processing', 'closed']);
 
             $table->timestamps();
         });

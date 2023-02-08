@@ -5,7 +5,6 @@ namespace App\Services;
 use Exception;
 use App\Models\User;
 use App\Models\Ticket;
-use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Client;
 use Orchid\Platform\Models\Role;
 use TelegramBot\Api\Types\Update;
@@ -13,15 +12,20 @@ use Illuminate\Support\Facades\Http;
 
 class TelegramBotService
 {
+    private $bot;
+
+    public function __construct()
+    {
+        $this->bot = new Client(config('services.telegram_bot_api.token'));
+    }
+
     public function __invoke()
     {
-        $bot = new Client(config('services.telegram_bot_api.token'));
-
-        $bot->command('start', function ($message) {
+        $this->bot->command('start', function ($message) {
             createUser($message);
         });
 
-        $bot->command('admin', function ($message) {
+        $this->bot->command('admin', function ($message) {
             $chatId = $message->getChat()->getId();
             $fromId = $message->getFrom()->getId();
 
@@ -37,7 +41,7 @@ class TelegramBotService
             }
         });
 
-        $bot->command('support', function ($message) {
+        $this->bot->command('support', function ($message) {
             $chatId = $message->getChat()->getId();
             $fromId = $message->getFrom()->getId();
 
@@ -53,9 +57,8 @@ class TelegramBotService
             }
         });
 
-        $bot->on(function (Update $update) {
-            $bot = new BotApi(config('services.telegram_bot_api.token'));
-            $ticketService = new TicketService();
+        $this->bot->on(function (Update $update) {
+            $ticketService = new TicketService;
 
             // Обработка нажатия кнопки закрытия тикета
             $getCallbackQuery = $update->getCallbackQuery();
@@ -66,26 +69,26 @@ class TelegramBotService
                 $ticketId = getTicketId($queryText);
                 $result = $ticketService->close($ticketId);
                 $message = $result ? '✅ Тикет с ID ' . $ticketId . ' успешно закрыт.' : '🛑 Тикет с ID ' . $ticketId . ' уже закрыт.';
-                $bot->answerCallbackQuery($update->getCallbackQuery()->getId(), $message, false);
+                $this->bot->answerCallbackQuery($update->getCallbackQuery()->getId(), $message, false);
             }
 
             $message = $update->getMessage();
             if (empty($message)) exit;
 
             // Получение сообщения
-            $telegramId = $message->getChat()->getId();
-            $user = User::firstWhere('telegram_id', $telegramId);
+            $fromId = $message->getFrom()->getId();
+            $user = User::firstWhere('telegram_id', $fromId);
 
             if ($message->getChat()->getType() == 'private') {
-                if (empty($user)) return $this->sendMessage($telegramId, 'Для начала воспользуйтесь командой: /start');
+                if (empty($user)) return $this->sendMessage($fromId, 'Для начала воспользуйтесь командой: /start');
 
-                $ticket = $user->tickets()->where('status', '!=', 'Closed')->latest()->first();
+                $ticket = $user->tickets()->where('status', '!=', 'closed')->latest()->first();
                 $ticketData = [
                     'title' => 'Telegram',
-                    'department' => 'Other',
+                    'department' => 'other',
                     'message' => $message->getText(),
                     'user_id' => $user->id,
-                    'status' => 'New',
+                    'status' => 'new',
                 ];
 
                 empty($ticket)
@@ -94,7 +97,7 @@ class TelegramBotService
             }
 
             // Обработка цитирования в чате поддержки
-            if ($telegramId == config('services.telegram_bot_api.ticket_chat_id') && $message->getReplyToMessage()) {
+            if ($fromId == config('services.telegram_bot_api.ticket_chat_id') && $message->getReplyToMessage()) {
                 $quotedText = $message->getReplyToMessage()->getText();
                 $ticketId = getTicketId($quotedText);
 
@@ -115,19 +118,17 @@ class TelegramBotService
             return true;
         });
 
-        $bot->run();
+        $this->bot->run();
     }
 
     public function sendMessage($id, $message, $keyboard = null)
     {
-        $bot = new BotApi(config('services.telegram_bot_api.token'));
-        return $bot->sendMessage($id, $message, 'HTML', false, null, $keyboard);
+        return $this->bot->sendMessage($id, $message, 'HTML', false, null, $keyboard);
     }
 
     public function pinMessage($id)
     {
-        $bot = new BotApi(config('services.telegram_bot_api.token'));
-        $bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), $id, true);
+        return $this->bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), $id, true);
     }
 
     public function unpinMessage($id)

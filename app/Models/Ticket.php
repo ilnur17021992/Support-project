@@ -26,14 +26,14 @@ class Ticket extends Model
     protected $allowedSorts = self::ATTRIBUTES;
 
     public const STATUS = [
-        'New' => 'Новый',
-        'Processing' => 'В процессе',
-        'Closed' => 'Закрыт',
+        'new' => 'Новый',
+        'processing' => 'В процессе',
+        'closed' => 'Закрыт',
     ];
 
     public const DEPARTMENT = [
-        'Other' => 'Общие вопросы',
-        'Moderation' => 'Модерация',
+        'other' => 'Общие вопросы',
+        'telegram' => 'По телеграм',
     ];
 
     public function user()

@@ -59,7 +59,7 @@ class TicketMessagesScreen extends Screen
                 ->icon(checkPermission('platform.systems.support') ? 'close' : 'check')
                 ->confirm(checkPermission('platform.systems.support') ? 'Проблема пользователя решена' : 'Моя проблема решена')
                 ->type(checkPermission('platform.systems.support') ? Color::DANGER() : Color::SUCCESS())
-                ->canSee($this->ticket->status != 'Closed')
+                ->canSee($this->ticket->status != 'closed')
                 ->method('closeTicket')
         ];
     }
@@ -73,7 +73,7 @@ class TicketMessagesScreen extends Screen
     {
         $rows = [];
 
-        if ($this->ticket->status != 'Closed') $rows[] = [
+        if ($this->ticket->status != 'closed') $rows[] = [
             Layout::rows([
                 TextArea::make('message')
                     ->placeholder('Введите текст ответа')
@@ -138,7 +138,7 @@ class TicketMessagesScreen extends Screen
         ]);
 
         try {
-            if ($ticket->status == 'Closed') throw new Exception('Ошибка: тикет уже закрыт');
+            if ($ticket->status == 'closed') throw new Exception('Ошибка: тикет уже закрыт');
             $validated['user_id'] = auth()->id();
             $validated['file'] = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
             $ticketService->send($ticket, $validated);

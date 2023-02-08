@@ -40,7 +40,7 @@ class CloseOldTickets extends Command
         $ticketService = new TicketService();
         $tenMinutesAgo = Carbon::now()->subMinutes(self::MINUTES_OLD);
 
-        $tickets = Ticket::where('status', 'Processing')
+        $tickets = Ticket::where('status', 'processing')
             ->where('updated_at', '<', $tenMinutesAgo)
             ->get();
 

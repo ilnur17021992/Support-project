@@ -112,7 +112,7 @@ class TicketListScreen extends Screen
                 'file' => ['nullable', 'mimes:png,jpg,gif', 'max:5120']
             ]);
 
-            $validated['status'] = 'New';
+            $validated['status'] = 'new';
             $validated['user_id'] = auth()->id();
             $validated['file'] = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
 

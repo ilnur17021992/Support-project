@@ -99,7 +99,7 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bubbles')
                 ->route('platform.ticket.list')
                 ->badge(function () {
-                    $count = Ticket::where('status', 'New')->count();
+                    $count = Ticket::where('status', 'new')->count();
                     if ($count > 0 && checkPermission('platform.systems.support')) return $count;
                 }, Color::SUCCESS()),
 

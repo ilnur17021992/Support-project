@@ -29,7 +29,7 @@ function checkRole($role)
 
 function checkExistsTicket($user)
 {
-    return $user->tickets()->whereIn('status', ['Processing', 'New'])->count() > 0;
+    return $user->tickets()->whereIn('status', ['processing', 'new'])->count() > 0;
 }
 
 function createUser($message)
