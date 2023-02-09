@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\TelegramController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\TicketController;
+use App\Http\Controllers\Api\TelegramController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +15,16 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::any('/bot', TelegramController::class);
+
+Route::prefix('/user')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::prefix('/ticket')->group(function () {
+        Route::get('/{id}/message', [TicketController::class, 'messages']);
+        Route::post('/{id}/message', [TicketController::class, 'storeMessage']);
+        Route::apiResource('/', TicketController::class);
+    });
+});
