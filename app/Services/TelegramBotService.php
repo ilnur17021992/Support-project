@@ -59,6 +59,10 @@ class TelegramBotService
 
         $this->bot->on(function (Update $update) {
             $ticketService = new TicketService;
+            $message = $update->getMessage();
+            $chatId = $message?->getChat()->getId();
+            $fromId = $message?->getFrom()->getId();
+            $user = User::firstWhere('telegram_id', $fromId);
 
             // Обработка нажатия кнопки закрытия тикета
             $getCallbackQuery = $update->getCallbackQuery();
@@ -70,16 +74,11 @@ class TelegramBotService
                 $result = $ticketService->close($ticketId);
                 $message = $result ? '✅ Тикет с ID ' . $ticketId . ' успешно закрыт.' : '🛑 Тикет с ID ' . $ticketId . ' уже закрыт.';
                 $this->bot->answerCallbackQuery($update->getCallbackQuery()->getId(), $message, false);
+                exit;
             }
 
-            $message = $update->getMessage();
-            if (empty($message)) exit;
-
-            // Получение сообщения
-            $fromId = $message->getFrom()->getId();
-            $user = User::firstWhere('telegram_id', $fromId);
-
-            if ($message->getChat()->getType() == 'private') {
+            // Обработка сообщений
+            if ($message?->getChat()->getType() == 'private') {
                 if (empty($user)) return $this->sendMessage($fromId, 'Для начала воспользуйтесь командой: /start');
 
                 $ticket = $user->tickets()->where('status', '!=', 'closed')->latest()->first();
@@ -97,7 +96,7 @@ class TelegramBotService
             }
 
             // Обработка цитирования в чате поддержки
-            if ($fromId == config('services.telegram_bot_api.ticket_chat_id') && $message->getReplyToMessage()) {
+            if ($chatId == config('services.telegram_bot_api.ticket_chat_id') && $message->getReplyToMessage()) {
                 $quotedText = $message->getReplyToMessage()->getText();
                 $ticketId = getTicketId($quotedText);
 

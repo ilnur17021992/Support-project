@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use TelegramBot\Api\BotApi;
-use TelegramBot\Api\Client;
 use Illuminate\Http\Request;
 use TelegramBot\Api\Exception;
 use App\Http\Controllers\Controller;
@@ -13,8 +11,8 @@ class TelegramController extends Controller
 {
     public function __invoke(Request $request, TelegramBotService $telegramBot)
     {
-        $telegramBot($request); // FIX 
         try {
+            $telegramBot($request); // FIX 
         } catch (Exception $e) {
             $e->getMessage();
         }
