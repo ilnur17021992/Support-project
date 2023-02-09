@@ -44,7 +44,7 @@ class TicketService
             '<b>Type: </b><code>' . $type . '</code>' . "\n" .
             '<b>ID: </b><code>' . $ticket->id . '</code>' . "\n" .
             '<b>Department: </b><code>' . Ticket::DEPARTMENT[$ticket->department] . '</code>' . "\n" .
-            '<b>' . $group . '</b><code> ' . $user->name . '</code>' . "\n" .
+            '<b>' . $group . '</b> <code>' . $user->name . '</code>' . "\n" .
             '<b>Title: </b><code>' . $ticket->title . '</code>' . "\n" .
             '<b>Message: </b><code>' . $text . '</code>' . "\n";
 

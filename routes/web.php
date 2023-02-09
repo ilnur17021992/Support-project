@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\TicketController;
 use App\Http\Controllers\TestController;
 
 /*
@@ -17,7 +15,7 @@ use App\Http\Controllers\TestController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect(route('login'));
 });
 
 Route::get('/test', TestController::class);
