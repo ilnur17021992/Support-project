@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use App\Models\Ticket;
-use App\Services\TicketService;
 use Illuminate\Console\Command;
+use App\Services\Support\TicketService;
 
 class CloseOldTickets extends Command
 {
@@ -37,7 +37,7 @@ class CloseOldTickets extends Command
      */
     public function handle()
     {
-        $ticketService = new TicketService();
+        $ticketService = new TicketService;
         $tenMinutesAgo = Carbon::now()->subMinutes(self::MINUTES_OLD);
 
         $tickets = Ticket::where('status', 'processing')

@@ -7,17 +7,19 @@ use App\Models\Ticket;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
 use Illuminate\Http\Request;
-use App\Services\TicketService;
 use Illuminate\Validation\Rule;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
+use App\Services\Support\Message;
 use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Support\Facades\Layout;
 use Orchid\Screen\Actions\ModalToggle;
+use App\Services\Support\TicketService;
 use Illuminate\Support\Facades\Storage;
 use App\Orchid\Layouts\Ticket\TicketListLayout;
+use App\Services\Support\Ticket as SupportTicket;
 
 class TicketListScreen extends Screen
 {
@@ -112,13 +114,21 @@ class TicketListScreen extends Screen
                 'file' => ['nullable', 'mimes:png,jpg,gif', 'max:5120']
             ]);
 
-            $validated['status'] = 'new';
-            $validated['user_id'] = auth()->id();
-            $validated['file'] = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
-
             if (checkExistsTicket(auth()->user())) throw new Exception('У вас уже есть активный тикет');
 
-            $ticketService->create($validated);
+            $ticket = $ticketService->create(new SupportTicket(
+                auth()->id(),
+                $validated['title'],
+                $validated['department'],
+                'new',
+            ));
+
+            $ticketService->send($ticket, new Message(
+                auth()->id(),
+                $validated['message'],
+                isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null
+            ));
+
             Toast::success('Тикет успешно создан.');
         } catch (\Throwable $e) {
             info($e);

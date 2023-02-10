@@ -7,16 +7,17 @@ use App\Models\Ticket;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
 use Illuminate\Http\Request;
-use App\Services\TicketService;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
+use App\Services\Support\Message;
 use Orchid\Screen\Actions\Button;
 use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Support\Facades\Layout;
+use App\Services\Support\TicketService;
 use Illuminate\Support\Facades\Storage;
 use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
 
@@ -139,9 +140,12 @@ class TicketMessagesScreen extends Screen
 
         try {
             if ($ticket->status == 'closed') throw new Exception('Ошибка: тикет уже закрыт');
-            $validated['user_id'] = auth()->id();
-            $validated['file'] = isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null;
-            $ticketService->send($ticket, $validated);
+
+            $ticketService->send($ticket, new Message(
+                auth()->id(),
+                $validated['message'],
+                isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null
+            ));
 
             Toast::success('Сообщение успешно отправлено.');
         } catch (\Throwable $e) {

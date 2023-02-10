@@ -1,16 +1,19 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Telegram;
 
 use Exception;
 use App\Models\User;
 use App\Models\Ticket;
+use App\Services\Support\Message;
+use App\Services\Support\Ticket as SupportTicket;
 use TelegramBot\Api\Client;
 use Orchid\Platform\Models\Role;
 use TelegramBot\Api\Types\Update;
 use Illuminate\Support\Facades\Http;
+use App\Services\Support\TicketService;
 
-class TelegramBotService
+class BotService
 {
     private $bot;
 
@@ -82,17 +85,18 @@ class TelegramBotService
                 if (empty($user)) return $this->sendMessage($fromId, 'Для начала воспользуйтесь командой: /start');
 
                 $ticket = $user->tickets()->where('status', '!=', 'closed')->latest()->first();
-                $ticketData = [
-                    'title' => 'Telegram',
-                    'department' => 'other',
-                    'message' => $message->getText(),
-                    'user_id' => $user->id,
-                    'status' => 'new',
-                ];
 
-                empty($ticket)
-                    ? $ticketService->create($ticketData)
-                    : $ticketService->send($ticket, $ticketData);
+                if (empty($ticket)) $ticket = $ticketService->create(new SupportTicket(
+                    $user->id,
+                    'Telegram',
+                    'other',
+                    'new',
+                ));
+
+                $ticketService->send($ticket, new Message(
+                    $user->id,
+                    $message->getText(),
+                ));
             }
 
             // Обработка цитирования в чате поддержки
@@ -104,13 +108,13 @@ class TelegramBotService
                     $messageId = $message->getReplyToMessage()->getMessageId();
                     $ticket = Ticket::find($ticketId);
                     $user = User::firstWhere('telegram_id', $message->getFrom()->getId());
-                    $message = [
-                        'user_id' => $user->id,
-                        'message' => $message->getText(),
-                    ];
 
+                    $this->bot->sendChatAction($chatId, 'typing');
                     $this->unpinMessage($messageId);
-                    $ticketService->send($ticket, $message);
+                    $ticketService->send($ticket, new Message(
+                        $user->id,
+                        $message->getText(),
+                    ));
                 }
             }
         }, function () {
@@ -120,22 +124,23 @@ class TelegramBotService
         $this->bot->run();
     }
 
-    public function sendMessage($id, $message, $keyboard = null)
+    public function sendMessage($chatId, $message, $keyboard = null)
     {
-        return $this->bot->sendMessage($id, $message, 'HTML', false, null, $keyboard);
+        $this->bot->sendChatAction($chatId, 'typing');
+        return $this->bot->sendMessage($chatId, $message, 'HTML', false, null, $keyboard);
     }
 
-    public function pinMessage($id)
+    public function pinMessage($messageId)
     {
-        return $this->bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), $id, true);
+        return $this->bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), $messageId, true);
     }
 
-    public function unpinMessage($id)
+    public function unpinMessage($messageId)
     {
         $token = config('services.telegram_bot_api.token');
         $response = Http::post("https://api.telegram.org/bot$token/unpinChatMessage", [
             'chat_id' => config('services.telegram_bot_api.ticket_chat_id'),
-            'message_id' => $id,
+            'message_id' => $messageId,
         ]);
 
         if (!$response['ok']) throw new Exception($response);
