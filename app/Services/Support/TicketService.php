@@ -30,7 +30,7 @@ class TicketService
     public function send(Ticket $ticket, SupportMessage $message): Message
     {
         $user = User::find($message->user_id);
-        $text = $message->message;
+        $text = $message->text;
         $url = route('platform.ticket.messages', ['ticket' => $ticket->id]);
         $group = $user->hasAccess('platform.systems.support') ? 'Support:' : 'User:';
         $status = $user->hasAccess('platform.systems.support') ? 'processing' : 'new';

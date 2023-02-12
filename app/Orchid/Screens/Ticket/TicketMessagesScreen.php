@@ -77,7 +77,7 @@ class TicketMessagesScreen extends Screen
 
         if ($this->ticket->status != 'closed') $rows[] = [
             Layout::rows([
-                TextArea::make('message')
+                TextArea::make('text')
                     ->placeholder('Введите текст ответа')
                     ->rows(9),
 
@@ -141,7 +141,7 @@ class TicketMessagesScreen extends Screen
 
             $ticketService->send($ticket, new Message(
                 auth()->id(),
-                $validated['message'],
+                $validated['text'],
                 isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null
             ));
 

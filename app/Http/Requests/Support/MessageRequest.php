@@ -24,7 +24,7 @@ class MessageRequest extends FormRequest
     public function rules()
     {
         return [
-            'message' => ['required', 'string', 'max:1024'],
+            'text' => ['required', 'string', 'max:1024'],
             'file' => ['nullable', 'mimes:pdf,png,jpg,gif', 'max:5120']
         ];
     }

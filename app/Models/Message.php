@@ -15,7 +15,7 @@ class Message extends Model
         'user_id',
         'ticket_id',
         'telegram_message_id',
-        'message',
+        'text',
         'file',
     ];
 

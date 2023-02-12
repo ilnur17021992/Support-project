@@ -92,7 +92,7 @@ class TicketListScreen extends Screen
                         ->type('text')
                         ->required(),
 
-                    TextArea::make('message')
+                    TextArea::make('text')
                         ->title('Сообщение')
                         ->rows(5)
                         ->required(),
@@ -110,7 +110,7 @@ class TicketListScreen extends Screen
             $validated = $request->validate([
                 'title' => ['required', 'string', 'max:255'],
                 'department' => ['required', Rule::in(array_keys(Ticket::DEPARTMENT))],
-                'message' => ['required', 'string', 'max:1024'],
+                'text' => ['required', 'string', 'max:1024'],
                 'file' => ['nullable', 'mimes:png,jpg,gif', 'max:5120']
             ]);
 
@@ -125,7 +125,7 @@ class TicketListScreen extends Screen
 
             $ticketService->send($ticket, new Message(
                 auth()->id(),
-                $validated['message'],
+                $validated['text'],
                 isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null
             ));
 
