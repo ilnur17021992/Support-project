@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\User;
 
-use App\Orchid\Layouts\Role\RolePermissionLayout;
-use App\Orchid\Layouts\User\UserEditLayout;
-use App\Orchid\Layouts\User\UserPasswordLayout;
-use App\Orchid\Layouts\User\UserRoleLayout;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Orchid\Access\UserSwitch;
-use Orchid\Platform\Models\User;
+use App\Models\User;
 use Orchid\Screen\Action;
-use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
-use Orchid\Support\Facades\Layout;
+use Illuminate\Http\Request;
+use Orchid\Access\UserSwitch;
+use Illuminate\Validation\Rule;
+use Orchid\Screen\Actions\Button;
 use Orchid\Support\Facades\Toast;
+use Orchid\Support\Facades\Layout;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Builder;
+use App\Orchid\Layouts\User\UserEditLayout;
+use App\Orchid\Layouts\User\UserRoleLayout;
+use App\Orchid\Layouts\User\UserPasswordLayout;
+use App\Orchid\Layouts\User\UserTelegramLayout;
+use App\Orchid\Layouts\Role\RolePermissionLayout;
 
 class UserEditScreen extends Screen
 {
@@ -129,6 +130,17 @@ class UserEditScreen extends Screen
                         ->method('save')
                 ),
 
+            Layout::block(UserTelegramLayout::class)
+                ->title('Телеграм ID')
+                ->description(__('На указанный ID будут отправляться сообщения.'))
+                ->commands(
+                    Button::make(__('Save'))
+                        ->type(Color::DEFAULT())
+                        ->icon('check')
+                        ->canSee($this->user->exists)
+                        ->method('save')
+                ),
+
             Layout::block(UserRoleLayout::class)
                 ->title(__('Roles'))
                 ->description(__('A Role defines a set of tasks a user assigned the role is allowed to perform.'))
@@ -186,8 +198,6 @@ class UserEditScreen extends Screen
         $user->replaceRoles($request->input('user.roles'));
 
         Toast::info(__('User was saved.'));
-
-        return redirect()->route('platform.systems.users');
     }
 
     /**

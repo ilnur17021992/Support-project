@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
+use Orchid\Screen\AsSource;
+use Orchid\Filters\Filterable;
 use Orchid\Platform\Models\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
+    use HasFactory, Filterable, AsSource;
+
     private const ATTRIBUTES = [
         'id',
         'telegram_id',

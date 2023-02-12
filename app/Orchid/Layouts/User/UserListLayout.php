@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\User;
 
-use Orchid\Platform\Models\User;
+use App\Models\User;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
@@ -44,6 +44,10 @@ class UserListLayout extends Table
                     ->asyncParameters([
                         'user' => $user->id,
                     ])),
+
+            TD::make('telegram_id', 'Телеграм ID')
+                ->sort()
+                ->filter(Input::make()),
 
             TD::make('updated_at', __('Last edit'))
                 ->sort()

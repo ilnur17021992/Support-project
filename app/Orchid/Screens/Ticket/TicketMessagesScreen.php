@@ -79,7 +79,6 @@ class TicketMessagesScreen extends Screen
             Layout::rows([
                 TextArea::make('text')
                     ->placeholder('Введите текст ответа')
-                    ->required()
                     ->rows(9),
 
                 Group::make([
