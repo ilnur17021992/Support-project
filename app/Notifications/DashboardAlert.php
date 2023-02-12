@@ -4,12 +4,10 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Orchid\Platform\Notifications\DashboardChannel;
 use Orchid\Platform\Notifications\DashboardMessage;
 
-class NewMessage extends Notification
+class DashboardAlert extends Notification
 {
     use Queueable;
 

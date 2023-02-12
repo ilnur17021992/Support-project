@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Support\MessageRequest;
+use App\Http\Requests\Support\TicketRequest;
 use App\Http\Resources\MessageResource;
 use App\Http\Resources\TicketResource;
 use App\Models\Ticket;
@@ -10,10 +12,8 @@ use App\Services\Support\Message;
 use App\Services\Support\Ticket as SupportTicket;
 use App\Services\Support\TicketService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class TicketController extends Controller
 {
@@ -24,13 +24,9 @@ class TicketController extends Controller
         return TicketResource::collection($tickets);
     }
 
-    public function store(Request $request, TicketService $ticketService): JsonResponse
+    public function store(TicketRequest $request, TicketService $ticketService): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'department' => ['required', Rule::in(array_keys(Ticket::DEPARTMENT))],
-        ]);
-
+        $validated = $request->validated();
         $ticket = $ticketService->create(new SupportTicket(
             auth()->id(),
             $validated['title'],
@@ -44,13 +40,9 @@ class TicketController extends Controller
         ], 201);
     }
 
-    public function storeMessage(Request $request, int $id, TicketService $ticketService): JsonResponse
+    public function storeMessage(MessageRequest $request, int $id, TicketService $ticketService): JsonResponse
     {
-        $validated = $request->validate([
-            'message' => ['required', 'string', 'max:1024'],
-            'file' => ['nullable', 'mimes:pdf,png,jpg,gif', 'max:5120']
-        ]);
-
+        $validated = $request->validated();
         $ticket = Ticket::find($id);
 
         if (!$ticket) return response()->json([

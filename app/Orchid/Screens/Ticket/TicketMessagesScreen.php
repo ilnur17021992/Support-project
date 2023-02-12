@@ -2,24 +2,25 @@
 
 namespace App\Orchid\Screens\Ticket;
 
-use Exception;
+use App\Http\Requests\Support\MessageRequest;
 use App\Models\Ticket;
-use Orchid\Screen\Screen;
-use Orchid\Support\Color;
+use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
+use App\Services\Support\Message;
+use App\Services\Support\TicketService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
-use App\Services\Support\Message;
-use Orchid\Screen\Actions\Button;
-use Orchid\Support\Facades\Alert;
-use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\TextArea;
+use Orchid\Screen\Screen;
+use Orchid\Support\Color;
+use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
-use App\Services\Support\TicketService;
-use Illuminate\Support\Facades\Storage;
-use App\Orchid\Layouts\Ticket\TicketMessagesLayout;
+use Orchid\Support\Facades\Toast;
 
 class TicketMessagesScreen extends Screen
 {
@@ -131,12 +132,9 @@ class TicketMessagesScreen extends Screen
         ];
     }
 
-    public function sendMessage(Request $request, Ticket $ticket, TicketService $ticketService)
+    public function sendMessage(MessageRequest $request, Ticket $ticket, TicketService $ticketService)
     {
-        $validated = $request->validate([
-            'message' => ['required', 'string', 'max:1024'],
-            'file' => ['nullable', 'mimes:png,jpg,gif', 'max:5120'],
-        ]);
+        $validated = $request->validated();
 
         try {
             if ($ticket->status == 'closed') throw new Exception('Ошибка: тикет уже закрыт');
@@ -157,7 +155,7 @@ class TicketMessagesScreen extends Screen
     public function updateTicket(Request $request, Ticket $ticket)
     {
         try {
-            $ticket->update($request->all());
+            $ticket->update($request->only(['department', 'title', 'status']));
             Toast::success('Тикет успешно обновлен.');
         } catch (\Throwable $e) {
             info($e);
@@ -174,10 +172,5 @@ class TicketMessagesScreen extends Screen
             info($e);
             Alert::error($e->getMessage());
         }
-    }
-
-    public function removeMessage(Request $request, $id)
-    {
-        dd($id);
     }
 }

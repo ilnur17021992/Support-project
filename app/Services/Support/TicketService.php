@@ -5,7 +5,7 @@ namespace App\Services\Support;
 use App\Models\Message;
 use App\Models\Ticket;
 use App\Models\User;
-use App\Notifications\NewMessage;
+use App\Notifications\DashboardAlert;
 use App\Services\Support\Message as SupportMessage;
 use App\Services\Support\Ticket as SupportTicket;
 use App\Services\Telegram\BotService;
@@ -38,8 +38,8 @@ class TicketService
         if ($ticket->messages()->count() == 0) $type = 'Новый тикет 🛟';
 
         $user->hasAccess('platform.systems.support')
-            ? $ticket->user->notify(new NewMessage($user->name, $text, $url))
-            : User::where('permissions->platform.systems.support', 1)->get()->each(fn ($support) => $support->notify(new NewMessage($user->name, $text, $url)));
+            ? $ticket->user->notify(new DashboardAlert($user->name, $text, $url))
+            : User::where('permissions->platform.systems.support', 1)->get()->each(fn ($support) => $support->notify(new DashboardAlert($user->name, $text, $url)));
 
         $ticketMessage =
             '<b>Time: </b><code>' . date('d.m.Y H:i:s') . '</code>' . "\n" .

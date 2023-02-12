@@ -18,6 +18,10 @@ Route::get('/', function () {
     return redirect(route('login'));
 });
 
+Route::get('/dashboard/login', function () {
+    return redirect(route('login'));
+});
+
 Route::get('/test', TestController::class);
 
 require __DIR__ . '/auth.php';

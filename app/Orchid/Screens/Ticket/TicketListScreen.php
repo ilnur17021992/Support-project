@@ -2,24 +2,24 @@
 
 namespace App\Orchid\Screens\Ticket;
 
-use Exception;
+use App\Http\Requests\Support\MessageRequest;
 use App\Models\Ticket;
-use Orchid\Screen\Screen;
-use Orchid\Support\Color;
-use Illuminate\Http\Request;
+use App\Orchid\Layouts\Ticket\TicketListLayout;
+use App\Services\Support\Message;
+use App\Services\Support\Ticket as SupportTicket;
+use App\Services\Support\TicketService;
+use Exception;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
-use App\Services\Support\Message;
-use Orchid\Support\Facades\Alert;
-use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\TextArea;
+use Orchid\Screen\Screen;
+use Orchid\Support\Color;
+use Orchid\Support\Facades\Alert;
 use Orchid\Support\Facades\Layout;
-use Orchid\Screen\Actions\ModalToggle;
-use App\Services\Support\TicketService;
-use Illuminate\Support\Facades\Storage;
-use App\Orchid\Layouts\Ticket\TicketListLayout;
-use App\Services\Support\Ticket as SupportTicket;
+use Orchid\Support\Facades\Toast;
 
 class TicketListScreen extends Screen
 {
@@ -104,7 +104,7 @@ class TicketListScreen extends Screen
         ];
     }
 
-    public function createTicket(Request $request, TicketService $ticketService): void
+    public function createTicket(MessageRequest $request, TicketService $ticketService): void
     {
         try {
             $validated = $request->validate([
