@@ -35,7 +35,7 @@ class TicketMessagesLayout extends Table
                         ->route('platform.systems.users.edit', $message->user->id);
                 }),
 
-            TD::make('message', 'Сообщение')
+            TD::make('text', 'Сообщение')
                 ->align(TD::ALIGN_LEFT),
 
             TD::make('file', 'Файл')

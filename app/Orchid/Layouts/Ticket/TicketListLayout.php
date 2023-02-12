@@ -12,7 +12,6 @@ use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Actions\DropDown;
-use Illuminate\Support\Facades\Auth;
 
 class TicketListLayout extends Table
 {
@@ -45,7 +44,7 @@ class TicketListLayout extends Table
                     ->route('platform.ticket.messages', $ticket)),
 
             TD::make('message', 'Сообщение')
-                ->render(fn (Ticket $ticket) => Link::make(Str::limit($ticket->messages()->latest()->first()?->message, 20))
+                ->render(fn (Ticket $ticket) => Link::make(Str::limit($ticket->messages()->latest()->first()?->text, 20))
                     ->route('platform.ticket.messages', $ticket)),
 
             TD::make('user_id', 'Пользователь')

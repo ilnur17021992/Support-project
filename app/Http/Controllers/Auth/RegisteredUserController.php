@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Auth\Events\Registered;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Http\JsonResponse;
 
 class RegisteredUserController extends Controller
 {
@@ -29,12 +30,12 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'telegram_id' => ['required', 'numeric', 'unique:'.User::class],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'telegram_id' => ['required', 'numeric', 'unique:' . User::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -53,6 +54,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        return $request->wantsJson()
+            ? response()->json(['message' => 'User registered successfully.'], 201)
+            : redirect()->intended(RouteServiceProvider::HOME);
     }
 }
