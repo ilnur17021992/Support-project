@@ -55,14 +55,14 @@ class TicketController extends Controller
 
         $message = $ticketService->send($ticket, new Message(
             auth()->id(),
-            $validated['message'],
+            $validated['text'],
             isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null
         ));
 
         return response()->json([
             'message' => 'Message sent successfully.',
             'data' => new MessageResource($message),
-        ], 201);
+        ], 200);
     }
 
     public function messages(int $id): AnonymousResourceCollection

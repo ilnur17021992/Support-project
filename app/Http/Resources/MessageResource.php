@@ -19,7 +19,7 @@ class MessageResource extends JsonResource
         return [
             'author' => $this->user->name,
             'group' => $this->user->hasAccess('platform.systems.support') ? 'Support' : 'User',
-            'message' => $this->message,
+            'text' => $this->text,
             'file' => isset($this->file) ? Storage::url($this->file) : null,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
