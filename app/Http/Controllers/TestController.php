@@ -9,7 +9,7 @@ use App\Models\Ticket;
 use Illuminate\Support\Str;
 use TelegramBot\Api\BotApi;
 use Illuminate\Http\Request;
-use App\Services\TicketService;
+use App\Services\Support\TicketService;
 use Orchid\Platform\Models\Role;
 use App\Services\TelegramBotService;
 use Illuminate\Support\Facades\Http;
@@ -147,9 +147,19 @@ class TestController extends Controller
         // return $ticket->messages()->orderBy('created_at', 'desc')->first()->telegram_message_id;
         // return $ticket->messages()->latest()->get();
 
-        $user = User::firstWhere('telegram_id', 1088796423);
-        $admin = Role::firstWhere('slug', 'admin');
+        // $user = User::firstWhere('telegram_id', 1088796423);
+        // $admin = Role::firstWhere('slug', 'admin');
+        // return $user->inRole($admin);
 
-        return $user->inRole($admin);
+        $text =
+            'Time: 16.02.2023 18:35:34
+            Type: Ответ тех. поддержки 👔
+            ID: 256
+            Department: Общие вопросы
+            Support: Admin
+            Title: Что такое Lorem Ipsum?
+            Message: Верно!';
+
+            echo getTicketId($text);
     }
 }

@@ -63,12 +63,12 @@ class TicketService
         if ($lastMessage) $this->bot->unpinMessage($lastMessage->telegram_message_id);
         $user->hasAccess('platform.systems.support') ?: $this->bot->pinMessage($messageId);
         $ticket->update(['status' => $status]);
-        $message = $ticket->messages()->create((array) $message); // FIX ???
+        $message = $ticket->messages()->create((array) $message);
 
         return $message;
     }
 
-    public function close($id): bool // FIX тип int
+    public function close(int $id): bool
     {
         $ticket = Ticket::find($id);
         $lastMessage = $ticket->messages()->latest()->first();;

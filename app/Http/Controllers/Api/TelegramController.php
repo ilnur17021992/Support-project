@@ -12,7 +12,7 @@ class TelegramController extends Controller
     public function __invoke(Request $request, BotService $bot)
     {
         try {
-            $bot($request); // FIX
+            $bot($request);
         } catch (Exception $e) {
             $e->getMessage();
         }

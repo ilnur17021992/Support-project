@@ -36,7 +36,8 @@ class TicketMessagesLayout extends Table
                 }),
 
             TD::make('text', 'Сообщение')
-                ->align(TD::ALIGN_LEFT),
+                ->align(TD::ALIGN_LEFT)
+                ->width('800px'),
 
             TD::make('file', 'Файл')
                 ->render(fn (Message $message) => isset($message->file) ? Link::make(mb_substr($message->file, -10))->href(Storage::url($message->file))->target('_blank') : null),
