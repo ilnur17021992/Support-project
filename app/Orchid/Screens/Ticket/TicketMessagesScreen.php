@@ -145,7 +145,7 @@ class TicketMessagesScreen extends Screen
                 isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null
             ));
 
-            Toast::success('Сообщение успешно отправлено.');
+            Toast::success('Сообщение отправлено.');
         } catch (\Throwable $e) {
             info($e);
             Alert::error($e->getMessage());
@@ -156,7 +156,7 @@ class TicketMessagesScreen extends Screen
     {
         try {
             $ticket->update($request->only(['department', 'title', 'status']));
-            Toast::success('Тикет успешно обновлен.');
+            Toast::success('Тикет обновлен.');
         } catch (\Throwable $e) {
             info($e);
             Alert::error($e->getMessage());
@@ -167,7 +167,7 @@ class TicketMessagesScreen extends Screen
     {
         try {
             $ticketService->close($ticket->id);
-            Toast::success('Тикет успешно закрыт.');
+            Toast::success('Тикет закрыт.');
         } catch (\Throwable $e) {
             info($e);
             Alert::error($e->getMessage());

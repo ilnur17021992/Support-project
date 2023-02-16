@@ -129,7 +129,7 @@ class TicketListScreen extends Screen
                 isset($validated['file']) ? Storage::putFile('files', $validated['file'], 'public') : null
             ));
 
-            Toast::success('Тикет успешно создан.');
+            Toast::success('Тикет создан.');
         } catch (\Throwable $e) {
             info($e);
             Alert::error($e->getMessage());
@@ -140,7 +140,7 @@ class TicketListScreen extends Screen
     {
         try {
             $ticketService->close($ticket->id);
-            Toast::success('Тикет успешно закрыт.');
+            Toast::success('Тикет закрыт.');
         } catch (\Throwable $e) {
             info($e);
             Alert::error($e->getMessage());
@@ -151,7 +151,7 @@ class TicketListScreen extends Screen
     {
         try {
             Ticket::find($id)->delete();
-            Toast::success('Тикет успешно удален.');
+            Toast::success('Тикет удален.');
         } catch (\Throwable $e) {
             info($e);
             Alert::error($e->getMessage());
