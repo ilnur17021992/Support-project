@@ -41,6 +41,8 @@ class BotService
 
                 $user->addRole($admin);
                 $this->sendMessage($chatId, 'Роль Admin успешно выдана.');
+            } else {
+                $this->sendMessage($chatId, 'Получить роль Admin можно в чате тех. поддержки.');
             }
         });
 
@@ -57,6 +59,8 @@ class BotService
 
                 $user->addRole($support);
                 $this->sendMessage($chatId, 'Роль Support успешно выдана.');
+            } else {
+                $this->sendMessage($chatId, 'Получить роль Support можно в чате тех. поддержки.');
             }
         });
 
@@ -126,23 +130,35 @@ class BotService
 
     public function sendMessage($chatId, $message, $keyboard = null)
     {
-        $this->bot->sendChatAction($chatId, 'typing');
-        return $this->bot->sendMessage($chatId, $message, 'HTML', false, null, $keyboard);
+        try {
+            $this->bot->sendChatAction($chatId, 'typing');
+            return $this->bot->sendMessage($chatId, $message, 'HTML', false, null, $keyboard);
+        } catch (\Throwable $e) {
+            info($e);
+        }
     }
 
     public function pinMessage($messageId)
     {
-        return $this->bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), $messageId, true);
+        try {
+            return $this->bot->pinChatMessage(config('services.telegram_bot_api.ticket_chat_id'), $messageId, true);
+        } catch (\Throwable $e) {
+            info($e);
+        }
     }
 
     public function unpinMessage($messageId)
     {
-        $token = config('services.telegram_bot_api.token');
-        $response = Http::post("https://api.telegram.org/bot$token/unpinChatMessage", [
-            'chat_id' => config('services.telegram_bot_api.ticket_chat_id'),
-            'message_id' => $messageId,
-        ]);
+        try {
+            $token = config('services.telegram_bot_api.token');
+            $response = Http::post("https://api.telegram.org/bot$token/unpinChatMessage", [
+                'chat_id' => config('services.telegram_bot_api.ticket_chat_id'),
+                'message_id' => $messageId,
+            ]);
 
-        if (!$response['ok']) throw new Exception($response);
+            if (!$response['ok']) throw new Exception($response);
+        } catch (\Throwable $e) {
+            info($e);
+        }
     }
 }

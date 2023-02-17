@@ -56,14 +56,14 @@ if (!function_exists('createUser')) {
             $keyboard = new InlineKeyboardMarkup([[['text' => 'Войти в личный кабинет', 'url' => url('/')]]]);
             $role = Role::firstWhere('slug', 'user');
 
-            $test = User::create([
+            $user = User::create([
                 'telegram_id' => $telegramId,
                 'name' => $userName,
                 'email' => $email,
                 'password' => Hash::make($password),
             ]);
 
-            if (isset($role)) $test->addRole($role);
+            if (isset($role)) $user->addRole($role);
 
             $bot->sendMessage($telegramId, getWelcomeMessage($firstName, $email, $password), 'HTML', replyMarkup: $keyboard);
         }
@@ -79,7 +79,7 @@ if (!function_exists('getWelcomeMessage')) {
             '<b>Пароль</b>: <code>' . $password . "</code>\n";
     }
 
-    if (!function_exists('test')) {
+    if (!function_exists('getPassword')) {
         function getPassword($length)
         {
             // Для проверки пароля: ^(?!.*[lIO01])(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10}$
