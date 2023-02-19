@@ -1,66 +1,59 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center"><b style="color:#D9534F; font-size:50px;">Support Project</b></div>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Описание
 
-## About Laravel
+Данный проект представляет собой систему обработки обращений пользователей, которая включает в себя Web-интерфейс, Телеграм бота и REST API для максимальной гибкости взаимодействия. В рамках проекта были реализованы функциональные возможности для обеспечения взаимодействия со сторонними сервисами, в том числе с использованием API Telegram. Для интеграции с другими сервисами было реализовано свое API. Важной составляющей проекта является логирование входящих API запросов и ответов, которое позволяет отслеживать работу приложения и обнаруживать ошибки.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+В проекте также был применен шаблон DTO (Data Transfer Object). Сервисы взаимодействуют между собой с помощью объектов DTO-классов, что упрощает передачу данных и облегчает понимание структуры приложения.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Общая архитектура проекта и использование современных подходов позволили достичь высокой производительности и расширяемости приложения.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+# Роли и права доступа
 
-## Learning Laravel
+В системе подразумевается три уровня доступа: Администратор, Тех. поддержка и Пользователь. Каждая роль имеет различные уровни доступа. Администратор может полностью управлять системой, в том числе создавать, редактировать и удалять пользователей и роли, а также обрабатывать тикеты. Тех. поддержка имеет ограниченные права и может только обрабатывать тикеты. Пользователи могут только создавать тикеты и отправлять сообщения.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+![Роли](https://opengpt.online/public/storage/files/other/roles.png)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# Способы взаимодействия
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+На данный момент реализовано три способа взаимодействия с тикет-системой: web-сайт, телеграм бот и REST API. Но ничего не мешает подключить как модули дополнительные возможности коммуникации.
 
-## Laravel Sponsors
+**Web-сайт** обладает удобным интерфейсом и позволяет пользователям создавать тикеты и просматривать их статусы. Для администраторов и тех. поддержки доступны дополнительные функции, включая CRUD операции с пользователями и тикетами.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+![Web-интерфейс](https://opengpt.online/public/storage/files/other/web.png)
 
-### Premium Partners
+**Телеграм бот** обеспечивает быстрое и удобное общение с тех. поддержкой. Клиенты могут создавать тикеты и получать ответы через бота, а тех. поддержка может прямо из чата ответить на тикет.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+![Телеграм бот](https://opengpt.online/public/storage/files/other/telegram.png)
 
-## Contributing
+**REST API** обеспечивает гибкость и возможность интеграции с другими приложениями. В документации OpenAPI и коллекции Postman представлены все необходимые команды и примеры запросов.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+![REST API](https://opengpt.online/public/storage/files/other/api.png)
 
-## Code of Conduct
+# Особенности
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **Простота.** Для создания обращения в техническую поддержку достаточно просто написать сообщение боту (регистрация не требуется).
+- **Гибкость.** Реализовано несколько способов для взаимодействия с системой: web-сайт, телеграм бот, REST API.
+- **Масштабируемость.** Есть возможность подключить дополнительные способы связи такие как Slack, WhatsApp и другие.
 
-## Security Vulnerabilities
+# Принцип работы
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Созданное обращение клиента автоматически пересылается в телеграм чат тех. поддержки, а также в уведомление на сайте (колокольчик).
+- Для ответа на тикет достаточно процитировать сообщение бота. Этот ответ будет отправлен клиенту в телеграм чат и  в уведомление на сайте.
+- Клиент может закрыть обращение нажав на зеленую кнопку "Проблема решена". В противном случае тикет будет автоматически закрыт, если после ответа тех. поддержки прошло более 10 минут.
 
-## License
+# Установка
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. `php artisan migrate` - запуск миграций (в консоли).
+2. `php artisan role:create` - создание ролей: admin, support, user (в консоли).
+3. `/start` - запуск телеграм бота, создание первого пользователя (в телеграм боте).
+4. `php artisan orchid:admin --id=1` - создание Администратора, выдача максимальных прав (в консоли).
+
+# Ссылки
+
+- https://opengpt.online - web-интерфейс проекта "Support".
+- https://t.me/myidbot - бот для получения ID телеграм для регистрации через сайт.
+- https://t.me/this_support_bot - бот для взаимодействия с тех. поддержкой через телеграм.
+- https://t.me/+C-LIdN9nHzxkNjky - чат тех. поддержки, в который стекаются обращения клиентов.
+- https://miro.com/app/board/uXjVPnvVxiE=/?share_link_id=40133349729 - визуальная схема проекта.
+- https://opengpt.online/public/storage/files/other/api-documentation.zip - документация OpenAPI и Postman.
