@@ -57,4 +57,4 @@
 -   https://t.me/this_support_bot - бот для взаимодействия с тех. поддержкой через телеграм.
 -   https://t.me/+C-LIdN9nHzxkNjky - чат тех. поддержки, в который стекаются обращения клиентов.
 -   https://miro.com/app/board/uXjVPnvVxiE=/?share_link_id=40133349729 - визуальная схема проекта.
--   https://opengpt.online/public/storage/files/other/api-documentation.zip - документация OpenAPI и Postman.
+-   https://opengpt.online/storage/files/other/api-documentation.zip - документация OpenAPI и Postman.
