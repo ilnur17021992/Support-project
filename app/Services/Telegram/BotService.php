@@ -88,7 +88,7 @@ class BotService
             if ($message?->getChat()->getType() == 'private') {
                 if (empty($user)) return $this->sendMessage($fromId, 'Для начала воспользуйтесь командой: /start');
 
-                $ticket = $user->tickets()->where('status', '!=', 'closed')->latest()->first();
+                $ticket = $user->tickets()->whereNot('status', 'closed')->latest()->first();
 
                 if (empty($ticket)) $ticket = $ticketService->create(new SupportTicket(
                     $user->id,

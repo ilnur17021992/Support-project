@@ -78,49 +78,49 @@ if (!function_exists('getWelcomeMessage')) {
             '<b>Почта</b>: <code>' . $email . "</code>\n" .
             '<b>Пароль</b>: <code>' . $password . "</code>\n";
     }
+}
 
-    if (!function_exists('getPassword')) {
-        function getPassword($length)
-        {
-            // Для проверки пароля: ^(?!.*[lIO01])(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10}$
-            // Массивы символов, кроме: lIO01
-            $array_pass_0 = "23456789"; //0123456789
-            $array_pass_1 = "abcdefghijkmnopqrstuvwxyz"; //abcdefghijklmnopqrstuvwxyz
-            $array_pass_2 = "ABCDEFGHJKLMNPQRSTUVWXYZ"; //ABCDEFGHIJKLMNOPQRSTUVWXYZ
+if (!function_exists('getPassword')) {
+    function getPassword($length)
+    {
+        // Для проверки пароля: ^(?!.*[lIO01])(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{10}$
+        // Массивы символов, кроме: lIO01
+        $array_pass_0 = "23456789"; //0123456789
+        $array_pass_1 = "abcdefghijkmnopqrstuvwxyz"; //abcdefghijklmnopqrstuvwxyz
+        $array_pass_2 = "ABCDEFGHJKLMNPQRSTUVWXYZ"; //ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
-            $mode = [0, 1, 2];
+        $mode = [0, 1, 2];
 
-            $password = "";
-            for ($rnd = 0; $rnd < $length; $rnd++) {
-                $array_pass = ${'array_pass_' . $mode[mt_rand(0, count($mode) - 1)]}; // выбираем случайный массив символов  
-                $random_char = substr($array_pass, mt_rand(0, strlen($array_pass) - 1), 1);  // выбираем случайный символ из массива символов 		
-                $password .= $random_char; // приписываем к строке пароля один символ  								
-            }
-
-            $blacklist = array(); // Числа которые нужно исключить
-
-            //Проверка присутствует ли цифра, если нет то вставляем			
-            for ($k = 0; $k < 1; $k++) {
-                $num_pos = array_rand(array_diff(range(0, $length - 1), $blacklist), 1); //Генерируем позицию для цифры
-                $blacklist[] = $num_pos; //Заносим позицию занятую номером в блеклист
-                $password[$num_pos] = substr($array_pass_0, mt_rand(0, strlen($array_pass_0) - 1), 1);
-            }
-
-            //Проверка присутствует ли буква нижнего регистра, если нет то вставляем
-            for ($k = 0; $k < 1; $k++) {
-                $az_pos = array_rand(array_diff(range(0, $length - 1), $blacklist), 1); //Генерируем позицию для буквы
-                $blacklist[] = $az_pos; //Заносим позицию занятую номером в блеклист
-                $password[$az_pos] = substr($array_pass_1, mt_rand(0, strlen($array_pass_1) - 1), 1);
-            }
-
-            //Проверка присутствует ли буква ВЕРХНЕГО регистра, если нет то вставляем
-            for ($k = 0; $k < 1; $k++) {
-                $AZ_pos = array_rand(array_diff(range(0, $length - 1), $blacklist), 1); //Генерируем позицию для буквы
-                $blacklist[] = $AZ_pos; //Заносим позицию занятую номером в блеклист
-                $password[$AZ_pos] = substr($array_pass_2, mt_rand(0, strlen($array_pass_2) - 1), 1);
-            }
-
-            return $password;
+        $password = "";
+        for ($rnd = 0; $rnd < $length; $rnd++) {
+            $array_pass = ${'array_pass_' . $mode[mt_rand(0, count($mode) - 1)]}; // выбираем случайный массив символов  
+            $random_char = substr($array_pass, mt_rand(0, strlen($array_pass) - 1), 1);  // выбираем случайный символ из массива символов 		
+            $password .= $random_char; // приписываем к строке пароля один символ  								
         }
+
+        $blacklist = array(); // Числа которые нужно исключить
+
+        //Проверка присутствует ли цифра, если нет то вставляем			
+        for ($k = 0; $k < 1; $k++) {
+            $num_pos = array_rand(array_diff(range(0, $length - 1), $blacklist), 1); //Генерируем позицию для цифры
+            $blacklist[] = $num_pos; //Заносим позицию занятую номером в блеклист
+            $password[$num_pos] = substr($array_pass_0, mt_rand(0, strlen($array_pass_0) - 1), 1);
+        }
+
+        //Проверка присутствует ли буква нижнего регистра, если нет то вставляем
+        for ($k = 0; $k < 1; $k++) {
+            $az_pos = array_rand(array_diff(range(0, $length - 1), $blacklist), 1); //Генерируем позицию для буквы
+            $blacklist[] = $az_pos; //Заносим позицию занятую номером в блеклист
+            $password[$az_pos] = substr($array_pass_1, mt_rand(0, strlen($array_pass_1) - 1), 1);
+        }
+
+        //Проверка присутствует ли буква ВЕРХНЕГО регистра, если нет то вставляем
+        for ($k = 0; $k < 1; $k++) {
+            $AZ_pos = array_rand(array_diff(range(0, $length - 1), $blacklist), 1); //Генерируем позицию для буквы
+            $blacklist[] = $AZ_pos; //Заносим позицию занятую номером в блеклист
+            $password[$AZ_pos] = substr($array_pass_2, mt_rand(0, strlen($array_pass_2) - 1), 1);
+        }
+
+        return $password;
     }
 }
